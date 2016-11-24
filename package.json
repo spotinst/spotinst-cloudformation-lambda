@@ -20,7 +20,7 @@
     "nock": "^8.0.0"
   },
   "dependencies": {
-    "lambda-formation": "^0.1.5",
+    "lambda-formation": "^0.1.7",
     "lodash": "^4.10.0",
     "request": "^2.71.0"
   }
