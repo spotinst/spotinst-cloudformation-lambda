@@ -23,9 +23,9 @@
     "nock": "^8.0.0"
   },
   "dependencies": {
+    "deep-diff": "^1.0.1",
     "lambda-formation": "^0.1.8",
-    "deep-diff": "^0.3.4",
-    "lodash": "^4.10.0",
-    "request": "^2.71.0"
+    "lodash": "^4.17.10",
+    "request": "^2.87.0"
   }
 }
