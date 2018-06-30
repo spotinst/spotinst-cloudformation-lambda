@@ -12,7 +12,7 @@
   },
   "author": {
     "name": "Kevin McGrath",
-    "email": "kevin.mcgrath@spotinst.com"
+    "email": "kevin@spotinst.com"
   },
   "license": "Apache-2.0",
   "devDependencies": {
