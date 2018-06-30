@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.22]
+## [0.4.22] - 2018-06-29
 ### Added
 - `spectrumAlert` resource to create, update and remove Spectrum Metric
   Alerts
