@@ -1,7 +1,7 @@
 var assert = require('assert'),
-  lambda = require('../../lib/resources/subscription');
+  lambda = require('../../lib/resources/spectrumAction');
 
-describe('subscription', function() {
+describe('spectrumAction', function() {
   describe('handler', function() {
     it('should require requestType', function(done) {
       var context = {
