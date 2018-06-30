@@ -1,6 +1,6 @@
 # spotinst-lambda
 
-A [lambda-formation](https://github.com/SungardAS/lambda-formation) project that will Create, Update and Cancel [Spotinst](http://spotinst.com) resources for AWS Lambda and CloudFormation.
+A [lambda-formation](https://github.com/spotinst/lambda-formation) project that will Create, Update and Cancel [Spotinst](http://spotinst.com) resources for AWS Lambda and CloudFormation.
 
 
 [![Build Status][travis-ci-image]][travis-ci-url]
@@ -182,11 +182,11 @@ Set the resource `Type` to  `Custom::elasticgroup` or `Custom::subscription`
     }
 
 
-[code-climate-image]: https://codeclimate.com/github/SungardAS/spotinst-lambda/badges/gpa.svg?branch=master
-[code-climate-url]: https://codeclimate.com/github/SungardAS/spotinst-lambda?branch=master
-[travis-ci-image]: https://travis-ci.org/SungardAS/spotinst-lambda.svg?branch=master
-[travis-ci-url]: https://travis-ci.org/SungardAS/spotinst-lambda?branch=master
-[coveralls-image]: https://coveralls.io/repos/SungardAS/spotinst-lambda/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/r/SungardAS/spotinst-lambda?branch=master
-[david-dm-image]: https://david-dm.org/SungardAS/spotinst-lambda.svg?branch=master
-[david-dm-url]: https://david-dm.org/SungardAS/spotinst-lambda?branch=master
+[code-climate-image]: https://codeclimate.com/github/spotinst/spotinst-lambda/badges/gpa.svg?branch=master
+[code-climate-url]: https://codeclimate.com/github/spotinst/spotinst-lambda?branch=master
+[travis-ci-image]: https://travis-ci.org/spotinst/spotinst-lambda.svg?branch=master
+[travis-ci-url]: https://travis-ci.org/spotinst/spotinst-lambda?branch=master
+[coveralls-image]: https://coveralls.io/repos/spotinst/spotinst-lambda/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/r/spotinst/spotinst-lambda?branch=master
+[david-dm-image]: https://david-dm.org/spotinst/spotinst-lambda.svg?branch=master
+[david-dm-url]: https://david-dm.org/spotinst/spotinst-lambda?branch=master
