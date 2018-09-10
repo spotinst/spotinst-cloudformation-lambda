@@ -1,6 +1,6 @@
 {
   "name": "spotinst-lambda",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "publishConfig": {
     "tag": "latest"
   },
@@ -20,7 +20,8 @@
     "coveralls": "^2.11.9",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
-    "nock": "^8.0.0"
+    "nock": "^8.0.0",
+    "sinon": "^6.1.5"
   },
   "dependencies": {
     "deep-diff": "^1.0.1",
