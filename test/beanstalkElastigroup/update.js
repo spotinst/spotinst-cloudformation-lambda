@@ -132,6 +132,7 @@ describe("beanstalkElastigroup", function() {
         });
     });
 
+
     it("update handler should update an existing group", function(done) {
       var context = {
         done: done
@@ -141,6 +142,83 @@ describe("beanstalkElastigroup", function() {
         _.merge({
           accessToken: ACCESSTOKEN,
           id:          'sig-11111111'
+        }, groupConfig),
+        context
+      );
+    });
+
+    it("elasticgroup handler should update an existing group", function(done) {
+      var context = {
+        done: done
+      };
+
+      update.handler(
+        _.merge({
+          requestType: 'update',
+          accessToken: ACCESSTOKEN,
+          id:          'sig-11111111'
+        }, groupConfig),
+        context
+      );
+    });
+
+    it("lambda handler should update an existing group", function(done) {
+      var context = {
+        done: done
+      };
+
+      update.handler(
+        _.merge({
+          resourceType: 'elasticgroup',
+          requestType:  'update',
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111'
+        }, groupConfig),
+        context
+      );
+    });
+
+    it("update handler should update an existing group and roll", function(done) {
+      var context = {
+        done: done
+      };
+
+      var updatePolicyConfig = {
+        shouldRoll: true,
+        rollConfig: {
+          batchSizePercentage: 50,
+          gracePeriod:         600
+        }
+      };
+
+      update.handler(
+        _.merge({
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111',
+          updatePolicy: updatePolicyConfig
+        }, groupConfig),
+        context
+      );
+    });
+
+    it("update handler should update an existing group and not perform roll", function(done) {
+      var context = {
+        done: done
+      };
+
+      var updatePolicyConfig = {
+        shouldRoll: false,
+        rollConfig: {
+          batchSizePercentage: 50,
+          gracePeriod:         600
+        }
+      };
+
+      update.handler(
+        _.merge({
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111',
+          updatePolicy: updatePolicyConfig
         }, groupConfig),
         context
       );
