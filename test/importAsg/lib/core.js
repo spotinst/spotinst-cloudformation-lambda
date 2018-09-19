@@ -7,8 +7,8 @@ var assert       = require('assert'),
 var event = {
 	"region":"us-west-2",
 	"asgName":"TestAsg",
-	"dryRun":true,
 	"deletePolicy":"Retain",
+	"groupConfig": {}
 
 }
 
@@ -24,13 +24,13 @@ describe("importAsg", function() {
 			done()
 		})
 
-		it("should get dry run", function(done){
-			assert.equal(asgLib.getDryRun(event), true)
+		it("should get delete policy config", function(done){
+			assert.equal(asgLib.getDeletePolicyConfig(event), "Retain")
 			done()
 		})
 
-		it("should get delete policy config", function(done){
-			assert.equal(asgLib.getDeletePolicyConfig(event), "Retain")
+		it("should get group config", function(done){
+			assert.deepEqual(asgLib.getGroupConfig(event), {})
 			done()
 		})
 	})
