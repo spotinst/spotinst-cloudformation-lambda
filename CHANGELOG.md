@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
 ### Added
+ - `importAsg` accepts new field `groupConfig` for create and update
  - `importBeanstalk` accepts new field `groupConfig` for create and update
 
 ## [0.4.23] - 2018-08-30
