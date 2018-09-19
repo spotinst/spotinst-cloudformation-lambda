@@ -80,5 +80,30 @@ describe("subscription", function() {
         context
       );
     });
+
+    it("return error from spotUtil.getTokenAndConfig", function(done){
+      var context = {
+        done: ()=>{
+          done()
+      }}
+
+      var updatePolicyConfig = {
+        shouldRoll: false,
+        rollConfig: {
+          batchSizePercentage: 50,
+          gracePeriod:         600
+        }
+      };
+
+      update.handler(
+        _.merge({
+          id:           'sig-11111111',
+          updatePolicy: updatePolicyConfig
+        }, subscriptionConfig),
+        context
+      );
+    })
+
+    
   });
 });
