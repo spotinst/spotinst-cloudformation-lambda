@@ -2,6 +2,7 @@
 
 A [lambda-formation](https://github.com/spotinst/lambda-formation) project that will Create, Update and Cancel [Spotinst](http://spotinst.com) resources for AWS Lambda and CloudFormation.
 
+To view [full documentation](https://api.spotinst.com/provisioning-ci-cd-sdk/provisioning-tools/cloudformation/)
 
 [![Build Status][travis-ci-image]][travis-ci-url]
 [![Coverage Status][coveralls-image]][coveralls-url]

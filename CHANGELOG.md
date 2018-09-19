@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
+### Changed
+ - moved the `createGroup` function to `spotUtil`
 ### Added
  - `importAsg` accepts new field `groupConfig` for create and update
  - `importBeanstalk` accepts new field `groupConfig` for create and update
