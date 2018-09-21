@@ -122,6 +122,21 @@ describe("spectrumAction", function() {
       context
                     );
     });
+    
+    it("return error from spotUtil.getTokenAndConfigs", function(done){
+      var context = {
+        done: ()=>{
+          done()
+      }}
+
+      create.handler(
+        _.merge({
+          id:           'sig-11111111',
+        }, spectrumActionConfig),
+        context
+      );
+    })
+
 
   });
 });

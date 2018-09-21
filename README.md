@@ -2,6 +2,7 @@
 
 A [lambda-formation](https://github.com/spotinst/lambda-formation) project that will Create, Update and Cancel [Spotinst](http://spotinst.com) resources for AWS Lambda and CloudFormation.
 
+To view [full documentation][full-docs-url]
 
 [![Build Status][travis-ci-image]][travis-ci-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
@@ -190,3 +191,4 @@ Set the resource `Type` to  `Custom::elasticgroup` or `Custom::subscription`
 [coveralls-url]: https://coveralls.io/r/spotinst/spotinst-lambda?branch=master
 [david-dm-image]: https://david-dm.org/spotinst/spotinst-lambda.svg?branch=master
 [david-dm-url]: https://david-dm.org/spotinst/spotinst-lambda?branch=master
+[full-docs-url]: https://api.spotinst.com/provisioning-ci-cd-sdk/provisioning-tools/cloudformation/

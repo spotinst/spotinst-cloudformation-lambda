@@ -1,11 +1,12 @@
 var _            = require('lodash'),
     assert       = require('assert'),
-    update       = require('../../lib/resources/elasticgroup/update'),
-    elasticgroup = require('../../lib/resources/elasticgroup'),
+    update       = require('../../lib/resources/beanstalkElastigroup/update'),
+    elasticgroup = require('../../lib/resources/beanstalkElastigroup'),
     lambda       = require('../../'),
     nock         = require('nock');
 
 var groupConfig = {
+  "accountId":"act-123456",
   "group": {
     "name":                    "test",
     "description":             "asdf",
@@ -50,46 +51,24 @@ var groupConfig = {
 
 groupConfig.group.description = Date.now() / 1000 + "";
 
-describe("elasticgroup", function() {
+describe("beanstalkElastigroup", function() {
   describe("update resource", function() {
 
     beforeEach(function() {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
-        .put('/aws/ec2/group/sig-11111111', {
-          "group": {
-            "name":                    "test",
-            "description":             /.+/,
-            "strategy":                {
-              "risk":               100,
-              "onDemandCount":      null,
-              "availabilityVsCost": "balanced"
-            },
-            "capacity":                {
-              "target":  1,
+        .put('/aws/ec2/group/sig-11111111', { 
+          "group": { 
+            "capacity": { 
+              "target": 1, 
               "minimum": 1,
-              "maximum": 1
+              "maximum": 1 
             },
-            "scaling":                 {},
-            "compute":                 {
-              "instanceTypes":       {
-                "ondemand": "m3.medium",
-                "spot":     ["m3.medium"]
-              },
-              "availabilityZones":   [{
-                "name":     "us-east-1a",
-                "subnetId": "subnet-11111111"
-              }],
-              "launchSpecification": {
-                "securityGroupIds": ["sg-11111111"],
-                "monitoring":       false,
-                "imageId":          "ami-60b6c60a",
-                "keyPair":          "testkey"
-              }
+            "compute": { 
+              "instanceTypes": { "spot": undefined } 
             },
-            "scheduling":              {},
-            "thirdPartiesIntegration": {}
-          }
+            "name": 'test' }
         })
+        .query({ accountId: 'act-123456' })
         .reply(200, {
           "request":  {
             "id":        "70364a6f-348c-4771-8e7d-eb8813339861",
@@ -153,44 +132,6 @@ describe("elasticgroup", function() {
         });
     });
 
-    //mock the roll endpoint
-    beforeEach(function() {
-      nock('https://api.spotinst.io', {"encodedQueryParams": true})
-        .put('/aws/ec2/group/sig-11111111/roll')
-        .reply(200, {
-          "request":  {
-            "id":        "70364a6f-348c-4771-8e7d-eb8813339861",
-            "url":       "/aws/ec2/group/sig-11111111",
-            "method":    "PUT",
-            "timestamp": "2016-01-28T17:13:52.039Z"
-          },
-          "response": {
-            "status": {
-              "code":    200,
-              "message": "OK"
-            },
-            "kind":   "spotinst:aws:ec2:group:roll",
-            "items":  [{
-              id:           "sbgd-123456",
-              status:       "STARTING",
-              currentBatch: 1,
-              numOfBatches: 2,
-              progress:     0,
-              groupId:      "sig-11111111"
-            }],
-            "count":  1
-          }
-        }, {
-          'content-type':    'application/json; charset=utf-8',
-          date:              'Thu, 28 Jan 2016 17:13:52 GMT',
-          vary:              'Accept-Encoding',
-          'x-request-id':    '80334a6d-348c-4781-8e9d-eb9813379861',
-          'x-response-time': '485ms',
-          'content-length':  '1469',
-          connection:        'Close'
-        });
-
-    });
 
     it("update handler should update an existing group", function(done) {
       var context = {
@@ -305,6 +246,7 @@ describe("elasticgroup", function() {
         context
       );
     })
+
 
   });
 });

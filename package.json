@@ -1,6 +1,6 @@
 {
   "name": "spotinst-lambda",
-  "version": "0.4.23",
+  "version": "0.4.24",
   "publishConfig": {
     "tag": "latest"
   },
@@ -24,9 +24,9 @@
     "sinon": "^6.1.5"
   },
   "dependencies": {
-    "deep-diff": "^1.0.1",
+    "deep-diff": "^1.0.2",
     "lambda-formation": "^0.1.8",
-    "lodash": "^4.17.10",
-    "request": "^2.87.0"
+    "lodash": "^4.17.11",
+    "request": "^2.88.0"
   }
 }

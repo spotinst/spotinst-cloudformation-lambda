@@ -122,7 +122,12 @@ describe("importAsg", function () {
             for (var i = 0; i < 4; i++) {
                 nock('https://api.spotinst.io', {"encodedQueryParams": true})
                     .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+                    .query({dryRun:true})
                     .reply(200, response);
+
+                nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                    .post('/aws/ec2/group')
+                    .reply(200, response)
             }
 
         });
