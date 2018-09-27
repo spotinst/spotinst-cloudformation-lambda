@@ -46,7 +46,7 @@ describe("beanstalkElastigroup", function() {
 
       deleteGroup.handler({
         accessToken: ACCESSTOKEN,
-        id:          'sig-11111111'
+        id:          'sig-11111111',
       }, context);
     });
 
