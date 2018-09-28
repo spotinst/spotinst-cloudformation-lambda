@@ -3,6 +3,7 @@ var assert       = require('assert'),
     elasticgroup = require('../../lib/resources/beanstalkElastigroup'),
     lambda       = require('../../'),
     nock         = require('nock');
+    spotUtil     = require('../../lib/util')
 
 describe("beanstalkElastigroup", function() {
   describe("delete resource", function() {
@@ -46,7 +47,7 @@ describe("beanstalkElastigroup", function() {
 
       deleteGroup.handler({
         accessToken: ACCESSTOKEN,
-        id:          'sig-11111111'
+        id:          'sig-11111111',
       }, context);
     });
 
@@ -120,6 +121,8 @@ describe("beanstalkElastigroup", function() {
         },
         context);
     });
+
+
   });
 
   describe("delete resource fail", function() {
@@ -189,6 +192,7 @@ describe("beanstalkElastigroup", function() {
           id:          'sig-11111111'
         }, context);
       });
+
     });
 
     describe("group doesn't exists", function() {
@@ -222,6 +226,45 @@ describe("beanstalkElastigroup", function() {
           done: function(err, obj) {
             assert.equal(err, null);
             done(err, obj);
+          }
+        };
+
+        deleteGroup.handler({
+          accessToken: ACCESSTOKEN,
+          id:          'sig-11111111'
+        }, context);
+      });
+
+      it("should return error", function(done) {
+        nock('https://api.spotinst.io', {"encodedQueryParams": true})
+          .get('/aws/ec2/group/sig-11111111')
+          .reply(500, {
+            "request":  {
+              "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
+              "url":       "/aws/ec2/group/sig-11111111",
+              "method":    "GET",
+              "timestamp": "2016-01-28T17:34:37.072Z"
+            },
+            "response": {
+              "status": {
+                "code":    500,
+                "message": "Bad Request"
+              }
+            }
+          }, {
+            'content-type':    'application/json; charset=utf-8',
+            date:              'Thu, 28 Jan 2016 17:34:37 GMT',
+            vary:              'Accept-Encoding',
+            'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
+            'x-response-time': '1115ms',
+            'content-length':  '266',
+            connection:        'Close'
+          });
+
+        var context = {
+          done: function(err, obj) {
+            assert.notEqual(err, null);
+            done(null, obj);
           }
         };
 

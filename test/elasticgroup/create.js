@@ -50,7 +50,7 @@ var groupConfig = {
 describe("elasticgroup", function() {
   describe("create resource", function() {
     before(function() {
-      for (var i=0; i<4; i++) {
+      for (var i=0; i<5; i++) {
         nock('https://api.spotinst.io', {"encodedQueryParams":true})
         .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
         .reply(200, {"request":{"id":"09c9bc9d-b234-4e06-bf2e-ec5f55033551","url":"/aws/ec2/group","method":"POST","timestamp":"2016-01-28T16:18:15.015Z"},"response":{"status":{"code":200,"message":"OK"},"kind":"spotinst:aws:ec2:group","items":[{"id":"sig-a307d690","name":"test","capacity":{"minimum":1,"maximum":1,"target":1},"strategy":{"risk":100,"availabilityVsCost":"balanced","drainingTimeout":0},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"product":"Linux/UNIX","launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"}},"scaling":{},"scheduling":{},"thirdPartiesIntegration":{},"createdAt":"2016-01-28T16:18:14.000+0000","updatedAt":"2016-01-28T16:18:14.000+0000"}],"count":1}}, { 'content-type': 'application/json; charset=utf-8',
@@ -131,6 +131,21 @@ describe("elasticgroup", function() {
         context
       );
     })
+
+    it("create handler should parse group config", function(done) {
+      var context = {
+        done: done
+      };
+
+      let tempConfig = groupConfig
+
+      tempConfig.group.compute.launchSpecification.loadBalancersConfig = {"targetGroupARNs":["arn1","arn2","arn3"]}
+
+      create.handler(
+        _.merge({accessToken: ACCESSTOKEN}, tempConfig),
+        context
+      );
+    });
 
   });
 });
