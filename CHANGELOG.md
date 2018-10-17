@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.26] - 2018-10-17
+### Fixed
+ - Error in validate response util function
+
 ## [0.4.25] - 2018-09-28
 ### Changed
  - beanstalk and asg delete to point to elastigroup delete
