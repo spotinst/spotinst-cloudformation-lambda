@@ -120,6 +120,63 @@ describe("elasticgroup", function() {
         },
         context);
     });
+
+    it("delete group with autoTag set to true", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group')
+        .reply(200, {
+          "request":  {
+            "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
+            "url":       "/aws/ec2/group",
+            "method":    "GET",
+            "timestamp": "2016-01-28T17:34:37.072Z"
+          },
+          "response": {
+            "status": {
+              "code":    200,
+              "message": "OK"
+            },
+            "items":[
+              {
+                "id":"sig-11111111",
+                "compute":{
+                  "launchSpecification":{
+                    "tags":[
+                      {"tagKey":"spotinst:aws:cloudformation:logical-id", "tagValue": "Elastigroup"},
+                      {"tagKey":"spotinst:aws:cloudformation:stack-id"  , "tagValue": "arn::12345/test/67890"},
+                      {"tagKey":"spotinst:aws:cloudformation:stack-name", "tagValue": "test"}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }, {
+          'content-type':    'application/json; charset=utf-8',
+          date:              'Thu, 28 Jan 2016 17:34:37 GMT',
+          vary:              'Accept-Encoding',
+          'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
+          'x-response-time': '1115ms',
+          'content-length':  '266',
+          connection:        'Close'
+        });
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .delete('/aws/ec2/group/sig-11111111')
+        .reply(200, {});
+
+        var context = {
+          done: done()
+        };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'sig-11111111',
+        autoTag:true,
+        LogicalResourceId:"Elastigroup",
+        StackId:"arn::12345/test/67890"
+      }, context);      
+    })
   });
 
   describe("delete resource fail", function() {
