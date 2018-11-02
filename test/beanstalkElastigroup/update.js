@@ -182,6 +182,11 @@ describe("beanstalkElastigroup", function() {
       var context = {
         done: done
       };
+      
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/aws/ec2/group/sig-11111111/roll')
+        .query({ accountId: 'act-123456' })
+        .reply(200,{})
 
       var updatePolicyConfig = {
         shouldRoll: true,

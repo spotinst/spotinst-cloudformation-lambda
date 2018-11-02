@@ -2,8 +2,10 @@ var _ = require('lodash'),
     assert = require('assert'),
     create = require('../../lib/resources/importAsg/create'),
     importAsg = require('../../lib/resources/importAsg'),
+    sinon = require('sinon'),
     lambda = require('../../'),
     nock = require('nock');
+
 
 var groupConfig = {
     "group": {
@@ -119,7 +121,7 @@ var response = {
 describe("importAsg", function () {
     describe("create resource", function () {
         before(function () {
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 5; i++) {
                 nock('https://api.spotinst.io', {"encodedQueryParams": true})
                     .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
                     .query({dryRun:true})
@@ -185,6 +187,29 @@ describe("importAsg", function () {
                 context
             );
         });
+
+        it("should run asgOperation", function(done){
+          let context = {
+            done:done
+          }
+
+          nock("https://api.spotinst.io", {"encodedQueryParams": true})
+            .post("/aws/ec2/group/sig-cf19b662/asgOperation/scaleOnce")
+            .reply(200, {})
+
+          importAsg.handler(
+            _.merge({
+              requestType: 'create',
+              accessToken: ACCESSTOKEN,
+              asgOperation:{
+                elastigroupThreshold:0,
+                asgTarget:0
+                }
+            }, groupConfig), 
+            context
+          );
+          
+        })
 
     });
 });
