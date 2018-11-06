@@ -19,11 +19,6 @@ describe("importAsg", function() {
 			done()
 		})
 
-		it("should get asg name", function(done){
-			assert.equal(asgLib.getASGName(event), "TestAsg")
-			done()
-		})
-
 		it("should get delete policy config", function(done){
 			assert.equal(asgLib.getDeletePolicyConfig(event), "Retain")
 			done()
