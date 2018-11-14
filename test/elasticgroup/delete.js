@@ -81,6 +81,7 @@ describe("elasticgroup", function() {
         accessToken:  ACCESSTOKEN,
         id:           'sig-11111111'
       }, context);
+
     });
 
     it("lambda handler should delete for CloudFormation", function(done) {
