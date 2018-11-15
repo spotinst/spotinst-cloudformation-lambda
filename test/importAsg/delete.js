@@ -120,6 +120,33 @@ describe("importAsg", function() {
         },
         context);
     });
+
+
+    it("should scale ASG then delete", function(done) {
+      var context = {
+        done: done()
+      };
+
+      nock("https://api.spotinst.io", {"encodedQueryParams": true})
+        .post("/aws/ec2/group/sig-11111111/asgOperation/scaleOnce")
+        .reply(200, {})
+
+      lambda.handler({
+        resourceType: 'elasticgroup',
+        requestType:  'delete',
+        accessToken:  ACCESSTOKEN,
+        id:           'sig-11111111',
+        deletePolicy:{
+          asgScaleTarget: 5
+        },
+        ResourceProperties:{
+          accessToken:ACCESSTOKEN
+        }
+      }, context);
+    });
+
+
+
   });
 
   describe("delete resource fail", function() {
