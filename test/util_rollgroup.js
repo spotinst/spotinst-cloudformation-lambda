@@ -27,9 +27,7 @@ describe("util rollGroup", function() {
     nock('https://api.spotinst.io', {reqheaders: {'Authorization': `Bearer ${token}`}})
       .put('/aws/ec2/group/sig-12345/roll?accountId=act-12345')
       .reply((uri, requestBody)=>{
-        console.log("in the reply")
         assert.deepEqual(requestBody, rollConfig)
-        console.log(this.req)
 
         return(200, {test:true})
       });
