@@ -161,18 +161,14 @@ describe("elasticgroup", function() {
           'content-length':  '266',
           connection:        'Close'
         });
-
-      nock('https://api.spotinst.io', {"encodedQueryParams": true})
-        .delete('/aws/ec2/group/sig-11111111')
-        .reply(200, {});
-
-        var context = {
-          done: done()
-        };
+      
+      var context = {
+        done: done()
+      };
 
       deleteGroup.handler({
         accessToken: ACCESSTOKEN,
-        id:          'sig-11111111',
+        id:          'ElastigroupError',
         autoTag:true,
         LogicalResourceId:"Elastigroup",
         StackId:"arn::12345/test/67890"
@@ -208,86 +204,84 @@ describe("elasticgroup", function() {
         });
     });
 
-    describe("group exists", function() {
-      it("should return error", function(done) {
-        nock('https://api.spotinst.io', {"encodedQueryParams": true})
-          .get('/aws/ec2/group/sig-11111111')
-          .reply(200, {
-            "request":  {
-              "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
-              "url":       "/aws/ec2/group/sig-11111111",
-              "method":    "GET",
-              "timestamp": "2016-01-28T17:34:37.072Z"
-            },
-            "response": {
-              "status": {
-                "code":    200,
-                "message": "OK"
-              }
+    it("should return error", function(done) {
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .reply(200, {
+          "request":  {
+            "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
+            "url":       "/aws/ec2/group/sig-11111111",
+            "method":    "GET",
+            "timestamp": "2016-01-28T17:34:37.072Z"
+          },
+          "response": {
+            "status": {
+              "code":    200,
+              "message": "OK"
             }
-          }, {
-            'content-type':    'application/json; charset=utf-8',
-            date:              'Thu, 28 Jan 2016 17:34:37 GMT',
-            vary:              'Accept-Encoding',
-            'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
-            'x-response-time': '1115ms',
-            'content-length':  '266',
-            connection:        'Close'
-          });
-
-        var context = {
-          done: function(err, obj) {
-            assert.notEqual(err, null);
-            done(null, obj);
           }
-        };
+        }, {
+          'content-type':    'application/json; charset=utf-8',
+          date:              'Thu, 28 Jan 2016 17:34:37 GMT',
+          vary:              'Accept-Encoding',
+          'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
+          'x-response-time': '1115ms',
+          'content-length':  '266',
+          connection:        'Close'
+        });
 
-        deleteGroup.handler({
-          accessToken: ACCESSTOKEN,
-          id:          'sig-11111111'
-        }, context);
-      });
+      var context = {
+        done: function(err, obj) {
+          assert.notEqual(err, null);
+          done(null, obj);
+        }
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'sig-11111111'
+      }, context);
     });
 
-    describe("group doesn't exists", function() {
-      it("should return ok", function(done) {
-        nock('https://api.spotinst.io', {"encodedQueryParams": true})
-          .get('/aws/ec2/group/sig-11111111')
-          .reply(400, {
-            "request":  {
-              "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
-              "url":       "/aws/ec2/group/sig-11111111",
-              "method":    "GET",
-              "timestamp": "2016-01-28T17:34:37.072Z"
-            },
-            "response": {
-              "status": {
-                "code":    400,
-                "message": "Bad Request"
-              }
+
+    it("should return ok", function(done) {
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .reply(400, {
+          "request":  {
+            "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
+            "url":       "/aws/ec2/group/sig-11111111",
+            "method":    "GET",
+            "timestamp": "2016-01-28T17:34:37.072Z"
+          },
+          "response": {
+            "status": {
+              "code":    400,
+              "message": "Bad Request"
             }
-          }, {
-            'content-type':    'application/json; charset=utf-8',
-            date:              'Thu, 28 Jan 2016 17:34:37 GMT',
-            vary:              'Accept-Encoding',
-            'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
-            'x-response-time': '1115ms',
-            'content-length':  '266',
-            connection:        'Close'
-          });
-
-        var context = {
-          done: function(err, obj) {
-            assert.equal(err, null);
-            done(err, obj);
           }
-        };
+        }, {
+          'content-type':    'application/json; charset=utf-8',
+          date:              'Thu, 28 Jan 2016 17:34:37 GMT',
+          vary:              'Accept-Encoding',
+          'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
+          'x-response-time': '1115ms',
+          'content-length':  '266',
+          connection:        'Close'
+        });
 
-        deleteGroup.handler({
-          accessToken: ACCESSTOKEN,
-          id:          'sig-11111111'
-        }, context);
-      });
+      var context = {
+        done: function(err, obj) {
+          assert.equal(err, null);
+          done(err, obj);
+        }
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'sig-11111111'
+      }, context);
     });
+
   });
 });
