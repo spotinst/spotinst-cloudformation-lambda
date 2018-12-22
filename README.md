@@ -182,6 +182,62 @@ Set the resource `Type` to  `Custom::elasticgroup` or `Custom::subscription`
       }
     }
 
+### Ocean
+
+```
+Resources: 
+  SpotinstOcean: 
+    Type: "Custom::ocean"
+    Properties: 
+      accessToken: !Ref SpotinstToken
+      accountId: !Ref SpotinstAccountId
+      autoTag: true
+      ocean:
+        name: !Ref OceanName
+        controllerClusterId: !Ref ControllerClusterId
+        region: !Sub ${AWS::Region}
+        autoScaler:
+          isEnabled: true
+          cooldown: 180
+          resourceLimits:
+            maxMemoryGib: 1500
+            maxVCpu: 750
+          down:
+            evaluationPeriods: 3
+          headroom:
+            cpuPerUnit: 2000
+            memoryPerUnit: 0
+            numOfUnits: 4
+          isAutoConfig: false
+        capacity:
+          minimum: 0
+          maximum: 1
+          target: 1
+        strategy:
+          spotPercentage: 100
+          fallbackToOd: true
+          utilizeReservedInstances: false
+        compute:
+          subnetIds:
+            - ""
+          instanceTypes:
+            whitelist:
+              - "c4.8xlarge"
+            # blacklist:
+            #   - "c4.8xlarge"
+          launchSpecification:
+            imageId: ""
+            # userData: "12345678987654321"
+            securityGroupIds:
+              - ""
+            # iamInstanceProfile:
+            #   arn: ""
+            keyPair: ""
+            tags:
+              - tagKey: "creator"
+                tagValue: "testing"
+```
+
 
 [code-climate-image]: https://codeclimate.com/github/spotinst/spotinst-lambda/badges/gpa.svg?branch=master
 [code-climate-url]: https://codeclimate.com/github/spotinst/spotinst-lambda?branch=master
