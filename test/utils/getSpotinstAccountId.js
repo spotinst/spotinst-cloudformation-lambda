@@ -1,6 +1,6 @@
 var _ = require('lodash'),
   assert = require('assert'),
-  util = require('../lib/util');
+  util = require('../../lib/util');
 
 
 describe("util getSpotinstAccountId", function() {

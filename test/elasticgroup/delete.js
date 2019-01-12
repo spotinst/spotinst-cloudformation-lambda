@@ -7,7 +7,7 @@ var assert       = require('assert'),
 describe("elasticgroup", function() {
   describe("delete resource", function() {
     before(function() {
-      for(var i = 0; i < 3; i++) {
+      for(var i = 0; i < 5; i++) {
         nock('https://api.spotinst.io', {"encodedQueryParams": true})
           .delete('/aws/ec2/group/sig-11111111')
           .reply(200, {
@@ -126,40 +126,14 @@ describe("elasticgroup", function() {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .get('/aws/ec2/group')
         .reply(200, {
-          "request":  {
-            "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
-            "url":       "/aws/ec2/group",
-            "method":    "GET",
-            "timestamp": "2016-01-28T17:34:37.072Z"
-          },
           "response": {
-            "status": {
-              "code":    200,
-              "message": "OK"
-            },
             "items":[
               {
                 "id":"sig-11111111",
-                "compute":{
-                  "launchSpecification":{
-                    "tags":[
-                      {"tagKey":"spotinst:aws:cloudformation:logical-id", "tagValue": "Elastigroup"},
-                      {"tagKey":"spotinst:aws:cloudformation:stack-id"  , "tagValue": "arn::12345/test/67890"},
-                      {"tagKey":"spotinst:aws:cloudformation:stack-name", "tagValue": "test"}
-                    ]
-                  }
-                }
+                "compute":{"launchSpecification":{"tags":[{"tagKey":"spotinst:aws:cloudformation:logical-id", "tagValue": "Elastigroup"},{"tagKey":"spotinst:aws:cloudformation:stack-id"  , "tagValue": "arn::12345/test/67890"},{"tagKey":"spotinst:aws:cloudformation:stack-name", "tagValue": "test"}]}}
               }
             ]
           }
-        }, {
-          'content-type':    'application/json; charset=utf-8',
-          date:              'Thu, 28 Jan 2016 17:34:37 GMT',
-          vary:              'Accept-Encoding',
-          'x-request-id':    '9aad8ebb-a42d-424f-83aa-fbfc3b14bd8a',
-          'x-response-time': '1115ms',
-          'content-length':  '266',
-          connection:        'Close'
         });
       
       var context = {
@@ -173,6 +147,49 @@ describe("elasticgroup", function() {
         LogicalResourceId:"Elastigroup",
         StackId:"arn::12345/test/67890"
       }, context);      
+    })
+
+    it("fail to get groups from api call", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group')
+        .reply(400, {response:{errors:[{code:400,message:"Group not found"}]}});
+
+      var context = {
+        done: done()
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'ElastigroupError2',
+        autoTag:true,
+        LogicalResourceId:"Elastigroup",
+        StackId:"arn::12345/test/67890"
+      }, context);  
+    })
+
+    it("fail to get group from tags 1 time then success", function(done){
+      var getAllResPass = "{\n\"request\":{\n\"id\":\"0435148a-b47b-4c0b-bdf0-66f643c5f7f1\",\n\"url\":\"/aws/ec2/group\",\n\"method\":\"GET\",\n\"timestamp\":\"2019-01-11T21:35:59.605Z\"\n},\n\"response\":{\n\"status\":{\n\"code\":200,\n\"message\":\"OK\"\n},\n\"kind\":\"spotinst:aws:ec2:group\",\n\"items\":[\n{\n\"id\":\"sig-11111111\",\n\"name\":\"targetSet\",\n\"capacity\":{\n\"minimum\":0,\n\"maximum\":2,\n\"target\":2,\n\"unit\":\"instance\"\n},\n\"strategy\":{\n\"risk\":90,\n\"availabilityVsCost\":\"balanced\",\n\"drainingTimeout\":240,\n\"lifetimePeriod\":\"days\",\n\"fallbackToOd\":true,\n\"persistence\":{},\n\"revertToSpot\":{\n\"performAt\":\"always\"\n}\n},\n\"compute\":{\n\"instanceTypes\":{\n\"ondemand\":\"m3.medium\",\n\"spot\":[\n\"m3.medium\"\n]\n},\n\"availabilityZones\":[\n{\n\"name\":\"us-west-2a\",\n\"subnetIds\":[\n\"subnet-79da021e\"\n],\n\"subnetId\":\"subnet-79da021e\"\n},\n{\n\"name\":\"us-west-2b\",\n\"subnetIds\":[\n\"subnet-1ba25052\"\n],\n\"subnetId\":\"subnet-1ba25052\"\n},\n{\n\"name\":\"us-west-2c\",\n\"subnetIds\":[\n\"subnet-03b7ed5b\"\n],\n\"subnetId\":\"subnet-03b7ed5b\"\n}\n],\n\"product\":\"Linux/UNIX\",\n\"launchSpecification\":{\n\"healthCheckType\":\"EC2\",\n\"healthCheckGracePeriod\":300,\n\"securityGroupIds\":[\n\"sg-1a29b065\"\n],\n\"monitoring\":false,\n\"ebsOptimized\":false,\n\"imageId\":\"ami-0ad81272\",\n\"keyPair\":\"DanielleKeyPair\",\n\"userData\":\"IyEvYmluL2Jhc2gKc2xlZXAgNjAKL29wdC9uZ2lueC9zYmluL25naW54\",\n\"tags\":[\n{{\"tagKey\":\"spotinst:aws:cloudformation:logical-id\",\"tagValue\": \"Elastigroup\"},{ \"tagKey\": \"spotinst:aws:cloudformation:stack-id\",\"tagValue\": \"arn::12345/test/67890\"},{ \"tagKey\": \"spotinst:aws:cloudformation:stack-name\",\"tagValue\": \"test\"},\n\"tagKey\":\"creator\",\n\"tagValue\":\"yael@spotinst.com\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:logical-id\",\n\"tagValue\":\"SpotinstElastigroup21\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:stack-id\",\n\"tagValue\":\"arn:aws:cloudformation:us-west-2:842422002533:stack/error/ce6ff330-15e8-11e9-8158-067bdfc711c4\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:stack-name\",\n\"tagValue\":\"error\"\n}\n],\n\"tenancy\":\"default\"\n}\n},\n\"scaling\":{},\n\"scheduling\":{},\n\"thirdPartiesIntegration\":{},\n\"createdAt\":\"2019-01-11T21:35:44.000Z\",\n\"updatedAt\":\"2019-01-11T21:35:44.000Z\"\n}\n],\n\"count\":29\n}\n}"
+      var getAllResFail = "{\n\"request\":{\n\"id\":\"0435148a-b47b-4c0b-bdf0-66f643c5f7f1\",\n\"url\":\"/aws/ec2/group\",\n\"method\":\"GET\",\n\"timestamp\":\"2019-01-11T21:35:59.605Z\"\n},\n\"response\":{\n\"status\":{\n\"code\":200,\n\"message\":\"OK\"\n},\n\"kind\":\"spotinst:aws:ec2:group\",\n\"items\":[\n{\n\"id\":\"sig-11111111\",\n\"name\":\"targetSet\",\n\"capacity\":{\n\"minimum\":0,\n\"maximum\":2,\n\"target\":2,\n\"unit\":\"instance\"\n},\n\"strategy\":{\n\"risk\":90,\n\"availabilityVsCost\":\"balanced\",\n\"drainingTimeout\":240,\n\"lifetimePeriod\":\"days\",\n\"fallbackToOd\":true,\n\"persistence\":{},\n\"revertToSpot\":{\n\"performAt\":\"always\"\n}\n},\n\"compute\":{\n\"instanceTypes\":{\n\"ondemand\":\"m3.medium\",\n\"spot\":[\n\"m3.medium\"\n]\n},\n\"availabilityZones\":[\n{\n\"name\":\"us-west-2a\",\n\"subnetIds\":[\n\"subnet-79da021e\"\n],\n\"subnetId\":\"subnet-79da021e\"\n},\n{\n\"name\":\"us-west-2b\",\n\"subnetIds\":[\n\"subnet-1ba25052\"\n],\n\"subnetId\":\"subnet-1ba25052\"\n},\n{\n\"name\":\"us-west-2c\",\n\"subnetIds\":[\n\"subnet-03b7ed5b\"\n],\n\"subnetId\":\"subnet-03b7ed5b\"\n}\n],\n\"product\":\"Linux/UNIX\",\n\"launchSpecification\":{\n\"healthCheckType\":\"EC2\",\n\"healthCheckGracePeriod\":300,\n\"securityGroupIds\":[\n\"sg-1a29b065\"\n],\n\"monitoring\":false,\n\"ebsOptimized\":false,\n\"imageId\":\"ami-0ad81272\",\n\"keyPair\":\"DanielleKeyPair\",\n\"userData\":\"IyEvYmluL2Jhc2gKc2xlZXAgNjAKL29wdC9uZ2lueC9zYmluL25naW54\",\n\"tags\":[\n{\n\"tagKey\":\"creator\",\n\"tagValue\":\"yael@spotinst.com\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:logical-id\",\n\"tagValue\":\"Elastigroup\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:stack-id\",\n\"tagValue\":\"arn::12345/test/67890\"\n},\n{\n\"tagKey\":\"spotinst:aws:cloudformation:stack-name\",\n\"tagValue\":\"test\"\n}\n],\n\"tenancy\":\"default\"\n}\n},\n\"scaling\":{},\n\"scheduling\":{},\n\"thirdPartiesIntegration\":{},\n\"createdAt\":\"2019-01-11T21:35:44.000Z\",\n\"updatedAt\":\"2019-01-11T21:35:44.000Z\"\n}\n],\n\"count\":29\n}\n}"
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group')
+        .reply(200, getAllResFail);
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group')
+        .reply(200, getAllResPass);
+
+      var context = {
+        done: done()
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'ElastigroupError3',
+        autoTag:true,
+        LogicalResourceId:"Elastigroup",
+        StackId:"arn::12345/test/67890"
+      }, context);  
     })
   });
 
@@ -242,7 +259,6 @@ describe("elasticgroup", function() {
         id:          'sig-11111111'
       }, context);
     });
-
 
     it("should return ok", function(done) {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})

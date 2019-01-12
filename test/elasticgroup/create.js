@@ -50,7 +50,7 @@ var groupConfig = {
 describe("elasticgroup", function() {
   describe("create resource", function() {
     before(function() {
-      for (var i=0; i<6; i++) {
+      for (var i=0; i<7; i++) {
         nock('https://api.spotinst.io', {"encodedQueryParams":true})
         .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
         .reply(200, {"request":{"id":"09c9bc9d-b234-4e06-bf2e-ec5f55033551","url":"/aws/ec2/group","method":"POST","timestamp":"2016-01-28T16:18:15.015Z"},"response":{"status":{"code":200,"message":"OK"},"kind":"spotinst:aws:ec2:group","items":[{"id":"sig-a307d690","name":"test","capacity":{"minimum":1,"maximum":1,"target":1},"strategy":{"risk":100,"availabilityVsCost":"balanced","drainingTimeout":0},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"product":"Linux/UNIX","launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"}},"scaling":{},"scheduling":{},"thirdPartiesIntegration":{},"createdAt":"2016-01-28T16:18:14.000+0000","updatedAt":"2016-01-28T16:18:14.000+0000"}],"count":1}}, { 'content-type': 'application/json; charset=utf-8',
@@ -61,7 +61,6 @@ describe("elasticgroup", function() {
                'content-length': '1416',
                connection: 'Close' });
       }
-
     });
 
     it("create handler should create a new group", function(done) {
@@ -180,6 +179,79 @@ describe("elasticgroup", function() {
         context
       );
     })
-
   });
+
+  describe("fail to create resource", function(){
+    var errRes = {
+      "request": {},
+      "response": {
+          "status": {},
+          "errors": [
+              {"code": "GENERAL_ERROR"},
+              {"code": "RequestLimitExceeded"},
+              {"code": "RequestLimitExceeded"}
+          ]
+      }
+    }
+
+    it("fail 5 times with RequestLimitExceeded code", function(done){
+      for (var i=0; i<5; i++) {
+        nock('https://api.spotinst.io', {"encodedQueryParams":true})
+        .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
+        .reply(400, errRes);
+      }
+
+      context = {
+        done:(err)=>{
+          assert.equal(err.split("\n")[1], 'RequestLimitExceeded: undefined')
+          done()
+        }
+      }
+
+      create.handler(
+        _.merge( {accessToken: ACCESSTOKEN }, groupConfig),
+        context
+      );
+    })
+
+    it("fail with not RequestLimitExceeded code", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
+      .reply(400, {response:{errors:[{code:400,message:"ami-validation error"}]}});
+
+      context = {
+        done:(err)=>{
+          assert.equal(err, "elasticgroup create failed: 400: ami-validation error\n")
+          done()
+        }
+      }
+
+      create.handler(
+        _.merge( {accessToken: ACCESSTOKEN }, groupConfig),
+        context
+      );
+    })
+
+    it("fail one time with RequestLimitExceeded code then pass", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
+      .reply(400, errRes);
+
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .post('/aws/ec2/group', {"group":{"name":"test","strategy":{"risk":100,"onDemandCount":null,"availabilityVsCost":"balanced"},"capacity":{"target":1,"minimum":1,"maximum":1},"scaling":{},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"},"product":"Linux/UNIX"},"scheduling":{},"thirdPartiesIntegration":{}}})
+      .reply(200, {"request":{"id":"09c9bc9d-b234-4e06-bf2e-ec5f55033551","url":"/aws/ec2/group","method":"POST","timestamp":"2016-01-28T16:18:15.015Z"},"response":{"status":{"code":200,"message":"OK"},"kind":"spotinst:aws:ec2:group","items":[{"id":"sig-a307d690","name":"test","capacity":{"minimum":1,"maximum":1,"target":1},"strategy":{"risk":100,"availabilityVsCost":"balanced","drainingTimeout":0},"compute":{"instanceTypes":{"ondemand":"m3.medium","spot":["m3.medium"]},"availabilityZones":[{"name":"us-east-1a","subnetId":"subnet-11111111"}],"product":"Linux/UNIX","launchSpecification":{"securityGroupIds":["sg-11111111"],"monitoring":false,"imageId":"ami-60b6c60a","keyPair":"testkey"}},"scaling":{},"scheduling":{},"thirdPartiesIntegration":{},"createdAt":"2016-01-28T16:18:14.000+0000","updatedAt":"2016-01-28T16:18:14.000+0000"}],"count":1}}, { 'content-type': 'application/json; charset=utf-8'});
+    
+      context = {
+        done:(err)=>{
+          assert.equal(err, null)
+          done()
+        }
+      }
+
+      create.handler(
+        _.merge( {accessToken: ACCESSTOKEN }, groupConfig),
+        context
+      );
+    })
+  })
 });

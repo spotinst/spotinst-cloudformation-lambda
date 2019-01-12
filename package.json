@@ -24,6 +24,7 @@
     "sinon": "^6.1.5"
   },
   "dependencies": {
+    "async": "^2.6.1",
     "asyncawait": "^1.0.7",
     "deep-diff": "^1.0.2",
     "lambda-formation": "^0.1.8",
