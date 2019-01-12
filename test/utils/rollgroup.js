@@ -1,7 +1,7 @@
 var _ = require('lodash'),
   assert = require('assert'),
   nock = require('nock');
-  util = require('../lib/util');
+  util = require('../../lib/util');
 
 var rollConfig = {
   batchSize: 50,

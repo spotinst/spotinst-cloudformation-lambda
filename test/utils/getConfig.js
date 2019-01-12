@@ -1,6 +1,6 @@
 var assert = require('assert'),
     nock   = require('nock');
-util       = require('../lib/util'),
+util       = require('../../lib/util'),
   _ = require('lodash');
 
 var groupConfig  = {
