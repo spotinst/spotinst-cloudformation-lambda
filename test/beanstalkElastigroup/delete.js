@@ -121,8 +121,6 @@ describe("beanstalkElastigroup", function() {
         },
         context);
     });
-
-
   });
 
   describe("delete resource fail", function() {

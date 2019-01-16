@@ -119,69 +119,6 @@ Set the resource `Type` to  `Custom::elasticgroup` or `Custom::subscription`
       }
     }
 
-### Lambda - delete elasticgroup
-
-    {
-      "accessToken": TOKEN
-      "requestType": "delete",
-      "resourceType": "elasticgroup",
-      "id": ELASTICGROUP_ID
-    }
-
-
-### CloudFormation
-
-    {
-      "AWSTemplateFormatVersion": "2010-09-09",
-      "Resources": {
-        "CFCR195GN": {
-          "Type": "Custom::elasticgroup",
-          "Properties": {
-            "ServiceToken": SERVICE_TOKEN,
-            "accessToken": TOKEN,
-            "group": {
-              "name": "test",
-              "strategy": {
-                "risk": 100,
-                "availabilityVsCost": "balanced"
-              },
-              "capacity": {
-                "target": 1,
-                "minimum": 1,
-                "maximum": 1
-              },
-              "scaling": {},
-              "compute": {
-                "instanceTypes": {
-                  "ondemand": "m3.medium",
-                  "spot": [
-                    "m3.medium"
-                    ]
-                },
-                "availabilityZones": [
-                  {
-                    "name": "us-east-1a",
-                    "subnetId": SUBNET_ID
-                  }
-                ],
-                "launchSpecification": {
-                  "monitoring": false,
-                  "imageId": "ami-60b6c60a",
-                  "keyPair": "testkey",
-                  "securityGroupIds": [
-                    SECURITY_GROUP_ID
-                    ]
-                },
-                "product": "Linux/UNIX"
-              },
-              "scheduling": {},
-              "thirdPartiesIntegration": {}
-            }
-          }
-        }
-      }
-    }
-
 ### Ocean
 
 ```
@@ -236,6 +173,98 @@ Resources:
             tags:
               - tagKey: "creator"
                 tagValue: "testing"
+```
+
+### MrScaler
+
+```
+  "Resources": {
+    "SpotinstEMR": {
+      "Type": "Custom::mrScaler",
+      "Properties": {
+        "ServiceToken": "arn:aws:lambda:us-west-2:842422002533:function:spotinst-cloudformation",
+        "accessToken": "d9228b8d9d1cdfab2464e504a6824faabeb6756e2b7d7c7b1d814dc2e4e615b1",
+        "accountId": "act-92d45673",
+        "autoTag":true,
+        "mrScaler":{
+          "name":"Jeffrey New MRScaler",
+          "description":"Spotinst MRScaler",
+          "region":"us-west-2",
+          "strategy":{
+             "new":{
+              "releaseLabel":"emr-5.17.0",
+              "numberOfRetries":1
+             },
+             "provisioningTimeout":{
+                "timeout":15,
+                "timeoutAction":"terminateAndRetry"
+             }
+          },
+          "compute":{
+             "availabilityZones":[
+                {
+                   "name":"us-west-2b",
+                   "subnetId":"subnet-1ba25052"
+                }
+             ],
+             "instanceGroups":{
+                "masterGroup":{
+                   "instanceTypes":[
+                      "m3.xlarge"
+                   ],
+                   "target":1,
+                   "lifeCycle":"ON_DEMAND"
+                },
+                "coreGroup":{
+                   "instanceTypes":[
+                      "m3.xlarge"
+                   ],
+                   "target":1,
+                   "lifeCycle":"SPOT"
+                },
+                "taskGroup":{
+                   "instanceTypes":[
+                      "m1.medium"
+                   ],
+                   "capacity":{
+                      "minimum":0,
+                      "maximum":30,
+                      "target":1
+                   },
+                   "lifeCycle":"SPOT"
+                }
+             },
+             "emrManagedMasterSecurityGroup":"sg-8cfb40f6",
+             "emrManagedSlaveSecurityGroup":"sg-f2f94288",
+             "additionalMasterSecurityGroups":["sg-f2f94288"],
+             "additionalSlaveSecurityGroups":["sg-8cfb40f6"],
+             "ec2KeyName":"Noam-key",
+             "applications":[
+                {
+                  "name":"Ganglia",
+                  "version": "1.0"
+                },
+                {"name":"Hadoop"},
+                {"name":"Hive"},
+                {"name":"Hue"},
+                {"name":"Mahout"},
+                {"name":"Pig"},
+                {"name":"Tez"}
+              ]
+          },
+          "cluster":{
+             "visibleToAllUsers":true,
+             "terminationProtected":true,
+             "keepJobFlowAliveWhenNoSteps": true,
+             "logUri":"s3://sorex-job-status",
+             "additionalInfo":"{'test':'more information'}",
+             "jobFlowRole": "EMR_EC2_DefaultRole",
+             "securityConfiguration":"test-config-jeffrey"
+          }
+        }
+      }
+    },
+  }
 ```
 
 
