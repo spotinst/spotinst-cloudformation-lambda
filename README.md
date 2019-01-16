@@ -183,8 +183,8 @@ Resources:
       "Type": "Custom::mrScaler",
       "Properties": {
         "ServiceToken": "arn:aws:lambda:us-west-2:842422002533:function:spotinst-cloudformation",
-        "accessToken": "d9228b8d9d1cdfab2464e504a6824faabeb6756e2b7d7c7b1d814dc2e4e615b1",
-        "accountId": "act-92d45673",
+        "accessToken": "Your Token",
+        "accountId": "Your Account ID",
         "autoTag":true,
         "mrScaler":{
           "name":"Jeffrey New MRScaler",
