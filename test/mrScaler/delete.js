@@ -32,7 +32,7 @@ describe("mrScaler", function() {
       var context = {
         done: function(err, obj) {
           assert.ifError(err);
-          assert.equal(obj.request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
+          assert.equal(JSON.parse(obj).request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
           done(err, obj);
         }
       };
@@ -47,7 +47,7 @@ describe("mrScaler", function() {
       var context = {
         done: function(err, obj) {
           assert.ifError(err);
-          assert.equal(obj.request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
+          assert.equal(JSON.parse(obj).request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
           done(err, obj);
         }
       };
@@ -63,7 +63,7 @@ describe("mrScaler", function() {
       var context = {
         done: function(err, obj) {
           assert.ifError(err);
-          assert.equal(obj.request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
+          assert.equal(JSON.parse(obj).request.url, "/aws/emr/mrScaler/simrs-85e26ac5");
           done(err, obj);
         }
       };
@@ -101,6 +101,24 @@ describe("mrScaler", function() {
         LogicalResourceId:"MrScaler",
         StackId:"arn::12345/test/67890"
       }, context);      
+    })
+
+    it("fail to get cluster from tags 1 time then success", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/emr/mrScaler')
+        .reply(400, {});
+      
+      var context = {
+        done: done()
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'MrScaler Error',
+        autoTag:true,
+        LogicalResourceId:"MrScaler-failed",
+        StackId:"arn::12345/test/67890"
+      }, context);  
     })
   });
 
@@ -213,4 +231,59 @@ describe("mrScaler", function() {
       });
     });
   });
+
+  describe("delete test no setup", function(){
+    it("should return error from get token mrScaler", function(done) {
+      var context = {
+        done: function(err, obj) {
+          assert.notEqual(err, null);
+          done(null, obj);
+        }
+      };
+
+      deleteGroup.handler({
+        id:          'simrs-85e26ac5'
+      }, context);
+    });
+
+
+    it("should return cluster cannot be terminated", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .delete('/aws/emr/mrScaler/simrs-85e26ac5')
+        .reply(400, {
+          "request":  {
+            "id":        "9bad8ebc-a42c-425f-83ab-fbec3b1cbd8a",
+            "url":       "/aws/emr/mrScaler/simrs-85e26ac5",
+            "method":    "delete",
+            "timestamp": "2016-01-28T17:34:37.072Z"
+          },
+          "response": {
+            "errors":[
+              {"message":"test. Please disable termination protection and try again."}
+            ]
+          }
+        });
+
+      var context = {
+        done: done()
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'simrs-85e26ac5'
+      }, context);
+    })
+
+    it("should rollback not delete mrScaler", function(done){
+      var context = {
+        done: done() 
+      };
+
+      deleteGroup.handler({
+        accessToken: ACCESSTOKEN,
+        StackId: "test",
+        id:          'ResourceFailed'
+      }, context);
+    })
+  })
 });

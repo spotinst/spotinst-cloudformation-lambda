@@ -1,7 +1,7 @@
 var _            = require('lodash'),
     assert       = require('assert'),
     update       = require('../../lib/resources/mrScaler/update'),
-    mrScaler = require('../../lib/resources/mrScaler'),
+    mrScaler       = require('../../lib/resources/mrScaler'),
     lambda       = require('../../'),
     nock         = require('nock');
 
@@ -109,14 +109,13 @@ var updateGroupConfig = {
   }
 }
 
-describe("beanstalkElastigroup", function() {
+describe("mrScaler", function() {
   describe("update resource", function() {
     beforeEach(function() {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/emr/mrScaler/simrs-85e26ac5', updateGroupConfig)
         .reply(200, {});
     });
-
 
     it("update handler should update an existing group", function(done) {
       var context = {
@@ -163,4 +162,20 @@ describe("beanstalkElastigroup", function() {
       );
     });
   });
+
+
+  describe("update test no setup", function(){
+    it("should return error from get token mrScaler", function(done) {
+      var context = {
+        done: (err)=>{
+          assert.notEqual(null, err)
+          done()
+        }
+      };
+
+      mrScaler.handler({
+        id:          'simrs-85e26ac5'
+      }, context);
+    });
+  })
 });

@@ -225,6 +225,7 @@ describe("mrScaler", function() {
       .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
       .reply(200, groupRes);
     });
+
     it("create handler should create a new group", function(done) {
       var context = {
         done: done
@@ -249,5 +250,78 @@ describe("mrScaler", function() {
         context
       );
     })
+
+    it("creates group with autoTags, input tags not found", function(done){
+      var context = {
+        done: done()
+      };
+
+      create.handler(
+        _.merge({
+          accessToken: ACCESSTOKEN, 
+          autoTag:true,
+          LogicalResourceId:"mrScaler",
+          StackId:"arn::12345/test/67890"
+        }, groupConfig),
+        context
+      );
+    })
+
+    it("creates group with autoTags, input tags found", function(done){
+      var context = {
+        done: done()
+      };
+
+      let tempConfig = groupConfig
+
+      tempConfig.mrScaler.compute.tags = [{tagKey:"test", tagValue:"test"}] 
+
+      create.handler(
+        _.merge({
+          accessToken: ACCESSTOKEN, 
+          autoTag:true,
+          LogicalResourceId:"mrScaler",
+          StackId:"arn::12345/test/67890"
+        }, tempConfig),
+        context
+      );
+    })
+
   });
+
+  describe("error creating resource", function(){
+    before(function() {
+      nock('https://api.spotinst.io')
+      .post('/aws/emr/mrScaler')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(400, {response:{errors:[{code:"RateLimitExceeded"}]}});
+    });
+
+    it("fail to create resource, RateLimitExceeded", function(done){
+      var context = {
+        done: done()
+      };
+
+      create.handler(
+        _.merge({accessToken: ACCESSTOKEN}, groupConfig),
+        context
+      );
+    })
+
+  })
+
+  describe("create test no setup", function(){
+    it("should return error from get token mrScaler", function(done) {
+      var context = {
+        done: (err, res)=>{
+          assert.notEqual(null, err)
+          done()
+        }
+      };
+
+      mrScaler.handler({
+        id:'simrs-85e26ac5'
+      }, context);
+    });
+  })
 });
