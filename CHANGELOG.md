@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.31] - 2019-12-16
+### Fix
+ - Rollback for creation failed by fixing spotUtils.validateResponse()
+
+### Added
+ - Ocean create, update, delete, and testing for all
+ - Tests for MrScaler
+ - autoTag for MrScaler
+
+### Updated
+ - MrScaler create, update and delete (had not been updated in a while)
+ 
 ## [0.4.26] - 2018-10-18
 ### Added
  - autoTag option to CF template
