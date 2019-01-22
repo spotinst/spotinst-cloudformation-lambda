@@ -20,45 +20,36 @@ var groupConfig = {
 
 
 describe("importAsg", function() {
-  describe("update resource", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
 
-    it("update handler should throw error", function(done) {
-      var context = {
-        done: done
-      };
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
-      sinon.stub(util, "done").returns(done())
+  describe("update asg resource/", function() {
 
-      update.handler(
-        _.merge({
-          accessToken: ACCESSTOKEN,
-          id:          'sig-11111111',
-        }, groupConfig),
-        context
-        );
+    describe("update importAsg resource success/", function(){
+      it("update importAsg throw error ", function(done) {
+        nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/aws/ec2/group/sig-11111111', groupConfig)
+        .reply(200, {});
 
-      util.done.restore()
+        util.done = sandbox.spy((err, event, context, body)=>{
+            assert.notEqual(err, null)
+            done()
+          })
 
-    });
-
-    it("importAsg handler should throw error", function(done) {
-      var context = {
-        done: done
-      };
-
-      sinon.stub(util, "done").returns(done())
-
-      importAsg.handler(
-        _.merge({
-          requestType: 'update',
-          accessToken: ACCESSTOKEN,
-          id:          'sig-11111111',
-        }, groupConfig)
-      );
-
-      util.done.restore()
-
-    });
-
+        update.handler(
+          _.merge({
+            accessToken: ACCESSTOKEN,
+            id:          'sig-11111111',
+          }, {groupConfig: groupConfig}),
+          context
+          );
+      });    
+    })
   });
 });

@@ -3,7 +3,9 @@ var _ = require('lodash'),
   update = require('../../lib/resources/spectrumAction/update'),
   spectrumAction = require('../../lib/resources/spectrumAction'),
   lambda = require('../../'),
-  nock = require('nock');
+  nock = require('nock'),
+  sinon  = require('sinon'),
+  util   = require('lambda-formation').util
 
 var spectrumActionConfig = {
   "action": {
@@ -17,45 +19,25 @@ var spectrumActionConfig = {
 };
 
 describe("spectrumAction", function() {
+  beforeEach(()=>{
+    nock.cleanAll();
+    sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+    sandbox.restore()
+  });
+
   describe("update", function() {
-
-    before(function() {
-      for (var i=0; i<3; i++) {
-        nock('https://api.spotinst.io', {"encodedQueryParams":true})
-        .put(
-          '/spectrum/metrics/action/ac-eff4e5260196',
-          spectrumActionConfig
-        )
-        .reply(
-          200,
-          {
-              "request": {
-                  "id": "037a9796-9a7f-4c60-a967-47d634a1744f",
-                  "url": "/spectrum/metrics/action/ac-eff4e5260196",
-                  "method": "PUT",
-                  "timestamp": "2018-06-29T20:21:14.641Z"
-              },
-              "response": {
-                  "status": {
-                      "code": 200,
-                      "message": "OK"
-                  }
-              }
-          },
-          {
-            'access-control-allow-headers': 'Origin,Accept,Content-Type,X-Requested-With,X-CSRF-Token',
-            'access-control-allow-methods': 'GET,POST,DELETE,PUT',
-            'access-control-allow-origin': '*',
-            'content-type': 'application/json; charset=utf-8'
-          });
-
-      }
-    });
-
     it("update handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .put('/spectrum/metrics/action/ac-eff4e5260196', spectrumActionConfig)
+      .reply(200,{});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
       update.handler(
         _.merge({
@@ -67,9 +49,14 @@ describe("spectrumAction", function() {
     });
 
     it("spectrumAction handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .put('/spectrum/metrics/action/ac-eff4e5260196', spectrumActionConfig)
+      .reply(200,{});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
       update.handler(
         _.merge({
@@ -82,9 +69,15 @@ describe("spectrumAction", function() {
     });
 
     it("lambda handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+      .put('/spectrum/metrics/action/ac-eff4e5260196', spectrumActionConfig)
+      .reply(200,{});
+
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
       update.handler(
         _.merge({
@@ -98,24 +91,14 @@ describe("spectrumAction", function() {
     });
 
     it("return error from spotUtil.getTokenAndConfig", function(done){
-      var context = {
-        done: ()=>{
-          done()
-      }}
 
-      var updatePolicyConfig = {
-        shouldRoll: false,
-        rollConfig: {
-          batchSizePercentage: 50,
-          gracePeriod:         600
-        }
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err, null)
+        done()
+      })
 
       update.handler(
-        _.merge({
-          id:           'sig-11111111',
-          updatePolicy: updatePolicyConfig
-        }, spectrumActionConfig),
+        _.merge({id: 'sig-11111111'}, spectrumActionConfig),
         context
       );
     })

@@ -3,7 +3,10 @@ var _ = require('lodash'),
   create = require('../../lib/resources/mrScaler/create'),
   mrScaler = require('../../lib/resources/mrScaler'),
   lambda = require('../../'),
-  nock = require('nock');
+  nock         = require('nock'),
+  sinon        = require('sinon'),
+  util         = require('lambda-formation').util;
+
 
 var groupConfig = {
   "mrScaler":{
@@ -218,43 +221,44 @@ var groupRes = {
 }
 
 describe("mrScaler", function() {
+  beforeEach(()=>{
+    nock.cleanAll();
+    sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+    sandbox.restore()
+  });
+
   describe("create resource", function() {
-    before(function() {
+
+    it("create handler should create a new group", function(done) {
       nock('https://api.spotinst.io')
       .post('/aws/emr/mrScaler')
       .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
       .reply(200, groupRes);
-    });
 
-    it("create handler should create a new group", function(done) {
-      var context = {
-        done: done
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
       create.handler(
         _.merge({accessToken: ACCESSTOKEN}, groupConfig),
-        context
+        null
       );
     });
 
-    it("return error from spotUtil.getTokenAndConfigs", function(done){
-      var context = {
-        done: ()=>{
-          done()
-      }}
-
-      create.handler(
-        _.merge({
-          id:           'simrs-85e26ac5',
-        }, groupConfig),
-        context
-      );
-    })
-
     it("creates group with autoTags, input tags not found", function(done){
-      var context = {
-        done: done()
-      };
+      nock('https://api.spotinst.io')
+      .post('/aws/emr/mrScaler')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(200, groupRes);
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+        })
 
       create.handler(
         _.merge({
@@ -263,14 +267,20 @@ describe("mrScaler", function() {
           LogicalResourceId:"mrScaler",
           StackId:"arn::12345/test/67890"
         }, groupConfig),
-        context
+        null
       );
     })
 
     it("creates group with autoTags, input tags found", function(done){
-      var context = {
-        done: done()
-      };
+      nock('https://api.spotinst.io')
+      .post('/aws/emr/mrScaler')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(200, groupRes);
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+        })
 
       let tempConfig = groupConfig
 
@@ -283,45 +293,58 @@ describe("mrScaler", function() {
           LogicalResourceId:"mrScaler",
           StackId:"arn::12345/test/67890"
         }, tempConfig),
-        context
+        null
       );
     })
-
   });
 
   describe("error creating resource", function(){
-    before(function() {
+    it("return error from spotUtil.getTokenAndConfigs", function(done){
+      nock('https://api.spotinst.io')
+      .post('/aws/emr/mrScaler')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(200, groupRes);
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.notEqual(err, null)
+          done()
+        })
+
+      create.handler(
+        _.merge({
+          id:           'simrs-85e26ac5',
+        }, groupConfig),
+        null
+      );
+    })
+    
+    it("fail to create resource, RateLimitExceeded", function(done){
       nock('https://api.spotinst.io')
       .post('/aws/emr/mrScaler')
       .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
       .reply(400, {response:{errors:[{code:"RateLimitExceeded"}]}});
-    });
 
-    it("fail to create resource, RateLimitExceeded", function(done){
-      var context = {
-        done: done()
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.notEqual(err, null)
+          done()
+        })
 
       create.handler(
         _.merge({accessToken: ACCESSTOKEN}, groupConfig),
-        context
+        null
       );
     })
-
   })
 
   describe("create test no setup", function(){
     it("should return error from get token mrScaler", function(done) {
-      var context = {
-        done: (err, res)=>{
-          assert.notEqual(null, err)
-          done()
-        }
-      };
 
-      mrScaler.handler({
-        id:'simrs-85e26ac5'
-      }, context);
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err, null)
+        done()
+      })
+
+      mrScaler.handler({id:'simrs-85e26ac5'}, null);
     });
   })
 });

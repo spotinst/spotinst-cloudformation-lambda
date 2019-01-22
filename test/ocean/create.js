@@ -1,12 +1,12 @@
 var _ = require('lodash'),
     assert = require('assert'),
     create = require('../../lib/resources/ocean/create'),
-    ocean = require('../../lib/resources/ocean'),
-    sinon = require('sinon'),
+    ocean  = require('../../lib/resources/ocean'),
+    sinon  = require('sinon'),
     lambda = require('../../'),
-    nock = require('nock'),
-    util = require('lambda-formation').util;
-
+    nock   = require('nock'),
+    sinon  = require('sinon'),
+    util   = require('lambda-formation').util;
 
 var config = {
     "ocean":{
@@ -144,78 +144,89 @@ var response = {
     }
 }
 
+describe("ocean create resource", function () {
+    beforeEach(()=>{
+        nock.cleanAll();
+        sandbox = sinon.createSandbox();
+    })
 
-describe("ocean", function () {
-    describe("create cluster", function () {
-        before(function () {
-            for (var i = 0; i < 3; i++) {
+    afterEach(()=>{
+        sandbox.restore()
+    });
+
+    describe("create ocean cluster success", function () {
+        describe("create ocean cluster variation tests", function(){
+
+            it("create ocean handler should create a new cluster", function (done) {
                 nock('https://api.spotinst.io', {"encodedQueryParams": true})
                     .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
                     .reply(200, response);
-            }
-        });
 
-        it("create handler should create a new cluster", function (done) {
-            var context = {
-                done: done
-            };
+                util.done = sandbox.spy((err, event, context, body)=>{
+                    assert.equal(err, null)
+                    done()
+                })
 
-            create.handler(
-                _.merge({accessToken: ACCESSTOKEN}, config),
-                context
-            );
-        });
+                create.handler(
+                    _.merge({accessToken: 'ACCESSTOKEN'}, config),
+                    null
+                );
+            });
 
-        it("ocean handler should create a new cluster", function(done){
-            var context = {
-                done: done
-            }
+            it("ocean handler should create a new cluster", function(done){
+                nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
+                .reply(200, response);
 
-            ocean.handler(
-                _.merge({
+                util.done = sandbox.spy((err, event, context, body)=>{
+                    assert.equal(err, null)
+                    done()
+                })
+
+                ocean.handler(
+                    _.merge({
                     resourceType: 'ocean',
                     requestType: 'create',
-                    accessToken: ACCESSTOKEN
-                }, config),
-                context
-            );
-        });
+                    accessToken: 'ACCESSTOKEN'
+                    }, config),
+                    null
+                );
+            });
 
-        it("lambda handler should create a new cluster", function(done){
-            var context = {
-                done: done
-            }
+            it("lambda ocean handler should create a new cluster", function(done){
+                nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                    .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
+                    .reply(200, response);
 
-            lambda.handler(
-                _.merge({
-                    resourceType: 'ocean',
-                    requestType: 'create',
-                    accessToken: ACCESSTOKEN
-                }, config),
-                context
-            );
-        });
+                util.done = sandbox.spy((err, event, context, body)=>{
+                    assert.equal(err, null)
+                    done()
+                })
 
-        it("return error from spotUtil.getTokenAndConfigs", function(done){
-          var context = {
-            done: ()=>{
-              done()
-          }}
-
-          create.handler(
-            _.merge({id:'o-11111111',}, config),
-            context
-          );
+                lambda.handler(
+                    _.merge({
+                        resourceType: 'ocean',
+                        requestType: 'create',
+                        accessToken: 'ACCESSTOKEN'
+                    }, config),
+                    context
+                );
+            });
         })
 
-        it("creates group with autoTags, input tags not found", function(done){
-          var context = {
-            done: done()
-          };
+        it("creates ocean cluster with autoTags, input tags not found", function(done){
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
+                .reply(200, response);
+
+            util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+            })
 
           create.handler(
             _.merge({
-              accessToken: ACCESSTOKEN, 
+              accessToken: 'ACCESSTOKEN', 
               autoTag:true,
               LogicalResourceId:"ocean",
               StackId:"arn::12345/test/67890"
@@ -224,60 +235,62 @@ describe("ocean", function () {
           );
         })
 
-        it("creates group with autoTags, input tags found", function(done){
-          var context = {
-            done: done()
-          };
+        it("creates ocean cluster with autoTags, input tags found", function(done){
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
+                .reply(200, response);
 
-          let tempConfig = config
+            util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+            })
 
-          tempConfig.ocean.compute.launchSpecification.tags = [{tagKey:"test", tagValue:"test"}] 
+            let tempConfig = config
 
-          create.handler(
-            _.merge({
-              accessToken: ACCESSTOKEN, 
-              autoTag:true,
-              LogicalResourceId:"Elastigroup",
-              StackId:"arn::12345/test/67890"
-            }, tempConfig),
-            context
-          );
+            tempConfig.ocean.compute.launchSpecification.tags = [{tagKey:"test", tagValue:"test"}] 
+
+            create.handler(
+                _.merge({
+                  accessToken: 'ACCESSTOKEN', 
+                  autoTag:true,
+                  LogicalResourceId:"Elastigroup",
+                  StackId:"arn::12345/test/67890"
+                }, tempConfig),
+                context
+            );
         })
     });
 
-    describe("fail to create cluster", function(){
-        it("create handler should throw error", function(done) {
-          var context = {
-            done: done
-          };
+    describe("fail to create ocean cluster", function(){
+        it("return error from spotUtil.getTokenAndConfigs", function(done){
+          util.done = sandbox.spy((err, event, context, body)=>{
+            assert.notEqual(err, null)
+            done()
+          })
 
-          sinon.stub(util, "done").returns(done())
+          create.handler(
+            _.merge({id:'o-11111111',}, config),
+            context
+          );
+        })
+
+        it("create handler should throw error", function(done) {
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/ocean/aws/k8s/cluster', {"cluster": config.ocean})
+                .reply(400, {});
+
+
+          util.done = sandbox.spy((err, event, context, body)=>{
+            assert.notEqual(err, null)
+            done()
+          })
 
           create.handler(
             _.merge({
-              accessToken: ACCESSTOKEN,
+              accessToken: 'ACCESSTOKEN',
             }, config),
             context
             );
-
-          util.done.restore()
-        });
-
-        it("ocean create handler should throw error", function(done) {
-          var context = {
-            done: done
-          };
-
-          sinon.stub(util, "done").returns(done())
-
-          ocean.handler(
-            _.merge({
-              requestType: 'create',
-              accessToken: ACCESSTOKEN,
-            }, config)
-          );
-
-          util.done.restore()
         });
     })
 });
