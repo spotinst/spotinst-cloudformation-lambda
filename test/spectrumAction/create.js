@@ -3,7 +3,9 @@ var _ = require('lodash'),
   create = require('../../lib/resources/spectrumAction/create'),
   spectrumAction = require('../../lib/resources/spectrumAction'),
   lambda = require('../../'),
-  nock = require('nock');
+  nock = require('nock'),
+  sinon  = require('sinon'),
+  util   = require('lambda-formation').util
 
 var spectrumActionConfig = {
   "action": {
@@ -17,62 +19,47 @@ var spectrumActionConfig = {
 };
 
 describe("spectrumAction", function() {
+  beforeEach(()=>{
+    nock.cleanAll();
+    sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+    sandbox.restore()
+  });
+
   describe("create resource", function() {
-    before(function() {
-      for (var i=0; i<4; i++) {
-
-        nock('https://api.spotinst.io', {"encodedQueryParams":true})
-        .post(
-          '/spectrum/metrics/action',
-          spectrumActionConfig
-        )
-        .reply(
-          200,
-          {
-            "request": {
-                "id": "e232b37c-0d2e-4c4b-b282-51e76bc977e9",
-                "url": "/spectrum/metrics/action?accountId=act-000XXXXX",
-                "method": "POST",
-                "timestamp": "2018-06-29T18:47:01.448Z"
-            },
-            "response": {
-                "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
-                "kind": "spotinst:spectrum:action",
-                "items": [
-                    {
-                        "id": "ac-ef459eb22456",
-                        "enabled": true,
-                        "name": "TestEmailAction",
-                        "type": "EMAIL",
-                        "params": {
-                            "email": "testEmailAction@spotinst.com"
-                        },
-                        "updatedAt": "2018-06-29T18:47:01.072Z",
-                        "createdAt": "2018-06-29T18:47:01.072Z"
-                    }
-                ],
-                "count": 1
-            }
-          },
-          {
-            'access-control-allow-headers': 'Origin,Accept,Content-Type,X-Requested-With,X-CSRF-Token',
-            'access-control-allow-methods': 'GET,POST,DELETE,PUT',
-            'access-control-allow-origin': '*',
-            'content-type': 'application/json; charset=utf-8',
-            connection: 'Close'
-          }
-        );
-
-      }
-    });
-
     it("create handler should create a new spectrumAction", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+        .post('/spectrum/metrics/action', spectrumActionConfig)
+        .reply(200, {
+          "request": {},
+          "response": {
+              "status": {
+                  "code": 200,
+                  "message": "OK"
+              },
+              "items": [
+                  {
+                      "id": "ac-ef459eb22456",
+                      "enabled": true,
+                      "name": "TestEmailAction",
+                      "type": "EMAIL",
+                      "params": {
+                          "email": "testEmailAction@spotinst.com"
+                      },
+                      "updatedAt": "2018-06-29T18:47:01.072Z",
+                      "createdAt": "2018-06-29T18:47:01.072Z"
+                  }
+              ],
+              "count": 1
+            }
+        });
+      
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
       create.handler(
         _.merge({accessToken: ACCESSTOKEN}, spectrumActionConfig),
@@ -81,9 +68,36 @@ describe("spectrumAction", function() {
     });
 
     it("spectrumAction handler should create a new spectrumAction", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+        .post('/spectrum/metrics/action', spectrumActionConfig)
+        .reply(200, {
+          "request": {},
+          "response": {
+              "status": {
+                  "code": 200,
+                  "message": "OK"
+              },
+              "items": [
+                  {
+                      "id": "ac-ef459eb22456",
+                      "enabled": true,
+                      "name": "TestEmailAction",
+                      "type": "EMAIL",
+                      "params": {
+                          "email": "testEmailAction@spotinst.com"
+                      },
+                      "updatedAt": "2018-06-29T18:47:01.072Z",
+                      "createdAt": "2018-06-29T18:47:01.072Z"
+                  }
+              ],
+              "count": 1
+            }
+        });
+      
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+       done()
+      })
 
       spectrumAction.handler(
         _.merge({
@@ -95,9 +109,36 @@ describe("spectrumAction", function() {
     });
 
     it("lambda handler should create a new spectrumAction", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+        .post('/spectrum/metrics/action', spectrumActionConfig)
+        .reply(200, {
+          "request": {},
+          "response": {
+              "status": {
+                  "code": 200,
+                  "message": "OK"
+              },
+              "items": [
+                  {
+                      "id": "ac-ef459eb22456",
+                      "enabled": true,
+                      "name": "TestEmailAction",
+                      "type": "EMAIL",
+                      "params": {
+                          "email": "testEmailAction@spotinst.com"
+                      },
+                      "updatedAt": "2018-06-29T18:47:01.072Z",
+                      "createdAt": "2018-06-29T18:47:01.072Z"
+                  }
+              ],
+              "count": 1
+            }
+        });
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err,  null)
+        done()
+      })
 
       lambda.handler(
         _.merge({
@@ -110,33 +151,55 @@ describe("spectrumAction", function() {
     });
 
     it("lambda handler should create a new spectrumAction from CloudFormation", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams":true})
+        .post('/spectrum/metrics/action', spectrumActionConfig)
+        .reply(200, {
+          "request": {},
+          "response": {
+              "status": {
+                  "code": 200,
+                  "message": "OK"
+              },
+              "items": [
+                  {
+                      "id": "ac-ef459eb22456",
+                      "enabled": true,
+                      "name": "TestEmailAction",
+                      "type": "EMAIL",
+                      "params": {
+                          "email": "testEmailAction@spotinst.com"
+                      },
+                      "updatedAt": "2018-06-29T18:47:01.072Z",
+                      "createdAt": "2018-06-29T18:47:01.072Z"
+                  }
+              ],
+              "count": 1
+            }
+        });
+
+      util.done = sandbox.spy((err, event, context, body)=>{ 
+        assert.equal(err, null)
+        done()
+      })
 
       lambda.handler({
         ResourceType: 'Custom::spectrumAction',
         RequestType: 'Create',
         ResourceProperties: _.merge({accessToken: ACCESSTOKEN},spectrumActionConfig)
       },
-      context
-                    );
+      context);
     });
     
     it("return error from spotUtil.getTokenAndConfigs", function(done){
-      var context = {
-        done: ()=>{
-          done()
-      }}
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err, null)
+        done()
+      })
 
       create.handler(
-        _.merge({
-          id:           'sig-11111111',
-        }, spectrumActionConfig),
+        _.merge({id:'sig-11111111'}, spectrumActionConfig),
         context
       );
     })
-
-
   });
 });

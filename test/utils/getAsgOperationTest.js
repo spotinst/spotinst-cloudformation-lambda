@@ -1,8 +1,19 @@
 var assert = require('assert'),
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  nock         = require('nock'),
+  sinon        = require('sinon');
 
 
 describe("util getAsgOperation", function() {
+    beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
+
   var event = {
   	asgOperation:{
   		asgTarget: "3",

@@ -1,7 +1,8 @@
 var _ = require('lodash'),
   assert = require('assert'),
   nock = require('nock');
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  sinon        = require('sinon');
 
 
 var event = {accountId:"act-12345"}
@@ -20,6 +21,14 @@ var groupConfig = {
 }
 
 describe("util updateGroup", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
   it("should update group without error", function(done) {
     nock('https://api.spotinst.io', {reqheaders: {'Authorization': `Bearer ${token}`}})
@@ -30,7 +39,7 @@ describe("util updateGroup", function() {
         return(200, {test:true})
       });
 
-    groupConfig.context = {done:done}
+    utilSpy.done = sandbox.stub().returns(done())
 
     util.updateGroup(groupConfig);
   });
@@ -65,7 +74,8 @@ describe("util updateGroup", function() {
 
     groupConfig.event.StackId = "test1/test2/test3"
     groupConfig.event.autoTag = true
-    groupConfig.context       = {done:done()}
+
+    utilSpy.done = sandbox.stub().returns(done())
 
     util.updateGroup(groupConfig);
   });
@@ -97,7 +107,8 @@ describe("util updateGroup", function() {
 
     groupConfig.event.StackId = "test1/test2/test3"
     groupConfig.event.autoTag = true
-    groupConfig.context = {done:done()}
+
+    utilSpy.done = sandbox.stub().returns(done())
 
     util.updateGroup(groupConfig);
   });

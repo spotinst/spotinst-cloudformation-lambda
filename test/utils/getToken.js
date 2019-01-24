@@ -1,9 +1,10 @@
 var assert = require('assert'),
   nock = require('nock'),
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  nock         = require('nock'),
+  sinon        = require('sinon');
 
 describe("util getToken", function() {
-
   before(function() {
 
     nock('https://oauth.spotinst.io', {"encodedQueryParams":true})

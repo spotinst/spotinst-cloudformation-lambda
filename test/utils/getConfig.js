@@ -1,7 +1,9 @@
 var assert = require('assert'),
     nock   = require('nock');
 util       = require('../../lib/util'),
-  _ = require('lodash');
+  _ = require('lodash'),
+  nock         = require('nock'),
+  sinon        = require('sinon');
 
 var groupConfig  = {
   'group': {
@@ -47,6 +49,14 @@ var groupConfig  = {
 var updatePolicy = {updatePolicy: {}};
 
 describe("util getConfig", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
   it("should find groupConfig", function(done) {
     util.getConfig(groupConfig, function(err, config) {

@@ -1,8 +1,18 @@
 var assert = require('assert'),
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  nock         = require('nock'),
+  sinon        = require('sinon');
 
 
 describe("util parseBoolean", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
   it("should parse boolean true", function() {
 

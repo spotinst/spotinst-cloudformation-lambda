@@ -1,7 +1,9 @@
 var _ = require('lodash'),
   assert = require('assert'),
   nock = require('nock');
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  nock         = require('nock'),
+  sinon        = require('sinon');
 
 var token = "1234567890987654321"
 
@@ -24,6 +26,14 @@ var groupConfig = {
 
 
 describe("util asgOperation", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
   it("should roll group without error", function(done) {
     nock('https://api.spotinst.io', {reqheaders: {'Authorization': `Bearer ${token}`}})

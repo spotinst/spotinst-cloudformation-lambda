@@ -5,6 +5,9 @@ var _            = require('lodash'),
     lambda       = require('../../'),
     nock         = require('nock');
 
+var sinon     = require('sinon');
+var util      = require('lambda-formation').util;
+
 var fullGroupConfig = {
   "mrScaler":{
     "name":"Jeffrey New MRScaler",
@@ -109,8 +112,17 @@ var updateGroupConfig = {
   }
 }
 
-describe("mrScaler", function() {
-  describe("update resource", function() {
+describe("mrScaler update resource", function() {
+  beforeEach(()=>{
+    nock.cleanAll();
+    sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+    sandbox.restore()
+  });
+
+  describe("update resource success", function() {
     beforeEach(function() {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/emr/mrScaler/simrs-85e26ac5', updateGroupConfig)
@@ -118,9 +130,10 @@ describe("mrScaler", function() {
     });
 
     it("update handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      });
 
       update.handler(
         _.merge({
@@ -132,9 +145,10 @@ describe("mrScaler", function() {
     });
 
     it("mrScaler handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      });
 
       update.handler(
         _.merge({
@@ -147,9 +161,10 @@ describe("mrScaler", function() {
     });
 
     it("lambda handler should update an existing group", function(done) {
-      var context = {
-        done: done
-      };
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      });
 
       update.handler(
         _.merge({
@@ -164,14 +179,12 @@ describe("mrScaler", function() {
   });
 
 
-  describe("update test no setup", function(){
+  describe("mrScaler update Util Function Tests ", function(){
     it("should return error from get token mrScaler", function(done) {
-      var context = {
-        done: (err)=>{
+      util.done = sandbox.spy((err, event, context, body)=>{
           assert.notEqual(null, err)
           done()
-        }
-      };
+      })
 
       mrScaler.handler({
         id:          'simrs-85e26ac5'

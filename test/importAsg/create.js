@@ -4,7 +4,9 @@ var _ = require('lodash'),
     importAsg = require('../../lib/resources/importAsg'),
     sinon = require('sinon'),
     lambda = require('../../'),
-    nock = require('nock');
+    nock         = require('nock'),
+    sinon     = require('sinon'),
+    util      = require('lambda-formation').util;
 
 
 var groupConfig = {
@@ -119,25 +121,31 @@ var response = {
 }
 
 describe("importAsg", function () {
+    beforeEach(()=>{
+        nock.cleanAll();
+        sandbox = sinon.createSandbox();
+    })
+
+    afterEach(()=>{
+        sandbox.restore()
+    });
+
     describe("create resource", function () {
-        before(function () {
-            for (var i = 0; i < 5; i++) {
-                nock('https://api.spotinst.io', {"encodedQueryParams": true})
-                    .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
-                    .query({dryRun:true})
-                    .reply(200, response);
-
-                nock('https://api.spotinst.io', {"encodedQueryParams": true})
-                    .post('/aws/ec2/group')
-                    .reply(200, response)
-            }
-
-        });
 
         it("create handler should create a new group", function (done) {
-            var context = {
-                done: done
-            };
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+                .query({dryRun:true})
+                .reply(200, response);
+
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group')
+                .reply(200, response)
+
+              util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+              })
 
             create.handler(
                 _.merge({accessToken: ACCESSTOKEN}, groupConfig),
@@ -146,9 +154,19 @@ describe("importAsg", function () {
         });
 
         it("importAsg handler should create a new group", function (done) {
-            var context = {
-                done: done
-            };
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+                .query({dryRun:true})
+                .reply(200, response);
+
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group')
+                .reply(200, response)
+
+              util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+              })
 
             importAsg.handler(
                 _.merge({
@@ -160,9 +178,19 @@ describe("importAsg", function () {
         });
 
         it("lambda handler should create a new group", function (done) {
-            var context = {
-                done: done
-            };
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+                .query({dryRun:true})
+                .reply(200, response);
+
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group')
+                .reply(200, response)
+
+              util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+              })
 
             lambda.handler(
                 _.merge({
@@ -175,9 +203,19 @@ describe("importAsg", function () {
         });
 
         it("lambda handler should create a new group from CloudFormation", function (done) {
-            var context = {
-                done: done
-            };
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+                .query({dryRun:true})
+                .reply(200, response);
+
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+                .post('/aws/ec2/group')
+                .reply(200, response)
+
+              util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+              })
 
             lambda.handler({
                     ResourceType: 'Custom::importAsg',
@@ -189,13 +227,23 @@ describe("importAsg", function () {
         });
 
         it("should run asgOperation", function(done){
-          let context = {
-            done:done
-          }
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+            .post('/aws/ec2/group/autoScalingGroup/import', groupConfig)
+            .query({dryRun:true})
+            .reply(200, response);
 
-          nock("https://api.spotinst.io", {"encodedQueryParams": true})
+            nock('https://api.spotinst.io', {"encodedQueryParams": true})
+            .post('/aws/ec2/group')
+            .reply(200, response)
+
+            nock("https://api.spotinst.io", {"encodedQueryParams": true})
             .post("/aws/ec2/group/sig-cf19b662/asgOperation/scaleOnce")
             .reply(200, {})
+
+            util.done = sandbox.spy((err, event, context, body)=>{
+                assert.equal(err, null)
+                done()
+            })
 
           importAsg.handler(
             _.merge({
@@ -208,7 +256,6 @@ describe("importAsg", function () {
             }, groupConfig), 
             context
           );
-          
         })
 
     });

@@ -1,11 +1,11 @@
-var _            = require('lodash'),
-    assert       = require('assert'),
-    update       = require('../../lib/resources/ocean/update'),
-    ocean        = require('../../lib/resources/ocean'),
-    lambda       = require('../../'),
-    nock         = require('nock'),
-    sinon        = require('sinon'),
-    util         = require('lambda-formation').util;
+var _      = require('lodash'),
+    assert = require('assert'),
+    update = require('../../lib/resources/ocean/update'),
+    ocean  = require('../../lib/resources/ocean'),
+    lambda = require('../../'),
+    nock   = require('nock'),
+    sinon  = require('sinon'),
+    util   = require('lambda-formation').util;
 
 var config = {
   "ocean":{
@@ -143,67 +143,177 @@ var response = {
 }
 
 
-describe("ocean", function() {
-  describe("update cluster", function() {
-    before(function () {
-        for (var i = 0; i < 3; i++) {
-            nock('https://api.spotinst.io', {"encodedQueryParams": true})
-                .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": config.ocean})
-                .reply(200, response);
+describe("update ocean", function() {
+  beforeEach(()=>{
+    nock.cleanAll();
+    sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+    sandbox.restore()
+  });
+
+  describe("update ocean cluster success", function() {
+    describe("update ocean cluster variation tests", function(){
+      it("update handler should update a new cluster", function (done) {
+          nock('https://api.spotinst.io', {"encodedQueryParams": true})
+            .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": config.ocean})
+            .reply(200, response);
+
+          util.done = sandbox.spy((err, event, context, body)=>{
+            assert.equal(err, null)
+            done()
+          })
+
+          update.handler(
+              _.merge({
+                accessToken: ACCESSTOKEN,
+                id: "o-7c1c9a42"
+              }, config),
+              context
+          );
+      });
+
+      it("ocean handler should update a new cluster", function(done){
+          nock('https://api.spotinst.io', {"encodedQueryParams": true})
+            .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": config.ocean})
+            .reply(200, response);
+
+          util.done = sandbox.spy((err, event, context, body)=>{
+            assert.equal(err, null)
+            done()
+          })
+
+          ocean.handler(
+              _.merge({
+                  resourceType: 'ocean',
+                  requestType: 'update',
+                  id: "o-7c1c9a42",
+                  accessToken: ACCESSTOKEN
+              }, config),
+              context
+          );
+      });
+
+      it("lambda handler should update a new cluster", function(done){
+          nock('https://api.spotinst.io', {"encodedQueryParams": true})
+            .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": config.ocean})
+            .reply(200, response);
+
+          util.done = sandbox.spy((err, event, context, body)=>{
+            assert.equal(err, null)
+            done()
+          })
+
+          lambda.handler(
+              _.merge({
+                  resourceType: 'ocean',
+                  requestType: 'update',
+                  id: "o-7c1c9a42",
+                  accessToken: ACCESSTOKEN
+              }, config),
+              context
+          );
+      });
+    })
+
+    it("update cluster with autoTags, input tags not found", function(done){
+      let tempConfig = config
+      tempConfig.ocean.compute.launchSpecification.tags = [
+        {
+          "tagValue": "jeffrey",
+          "tagKey": "creator"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:logical-id",
+          "tagValue": "ocean"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:stack-id",
+          "tagValue": "arn::12345/test/67890"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:stack-name",
+          "tagValue": "test"
         }
-    });
+      ]
 
-    it("update handler should update a new cluster", function (done) {
-        var context = {
-            done: done
-        };
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": tempConfig.ocean})
+        .reply(200, response);
 
-        update.handler(
-            _.merge({
-              accessToken: ACCESSTOKEN,
-              id: "o-7c1c9a42"
-            }, config),
-            context
-        );
-    });
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
-    it("ocean handler should update a new cluster", function(done){
-        var context = {
-            done: done
+      update.handler(
+        _.merge({
+          accessToken: ACCESSTOKEN, 
+          autoTag:true,
+          LogicalResourceId:"ocean",
+          id: "o-7c1c9a42",
+          StackId:"arn::12345/test/67890"
+        }, config),
+        context
+      );
+    })
+
+    it("update cluster with autoTags, input tags found", function(done){
+      let tempOutputConfig = config
+
+      tempOutputConfig.ocean.compute.launchSpecification.tags = [
+        {
+          "tagKey": "test",
+          "tagValue": "test"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:logical-id",
+          "tagValue": "ocean"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:stack-id",
+          "tagValue": "arn::12345/test/67890"
+        },
+        {
+          "tagKey": "spotinst:aws:cloudformation:stack-name",
+          "tagValue": "test"
         }
+      ]
 
-        ocean.handler(
-            _.merge({
-                resourceType: 'ocean',
-                requestType: 'update',
-                id: "o-7c1c9a42",
-                accessToken: ACCESSTOKEN
-            }, config),
-            context
-        );
-    });
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": tempOutputConfig.ocean})
+        .reply(200, response);
 
-    it("lambda handler should update a new cluster", function(done){
-        var context = {
-            done: done
-        }
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
 
-        lambda.handler(
-            _.merge({
-                resourceType: 'ocean',
-                requestType: 'update',
-                id: "o-7c1c9a42",
-                accessToken: ACCESSTOKEN
-            }, config),
-            context
-        );
-    });
+      let tempInputConfig = config
 
+      tempInputConfig.ocean.compute.launchSpecification.tags = [{tagKey:"test", tagValue:"test"}] 
+
+      update.handler(
+        _.merge({
+          accessToken: ACCESSTOKEN, 
+          autoTag:true,
+          LogicalResourceId:"ocean",
+          StackId:"arn::12345/test/67890",
+          id: "o-7c1c9a42",
+        }, tempInputConfig),
+        context
+      );
+    })
+
+  })
+
+  describe("update ocean cluster fails", function(){
     it("return error from spotUtil.getTokenAndConfig", function(done){
-      var context = {
-        done: ()=>{
-          done()
-      }}
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err)
+        done()
+      })
 
       update.handler(
         _.merge({
@@ -213,52 +323,15 @@ describe("ocean", function() {
       );
     })
 
-    it("update cluster with autoTags, input tags not found", function(done){
-      var context = {
-        done: done()
-      };
-
-      update.handler(
-        _.merge({
-          accessToken: ACCESSTOKEN, 
-          autoTag:true,
-          LogicalResourceId:"ocean",
-          StackId:"arn::12345/test/67890"
-        }, config),
-        context
-      );
-    })
-
-    it("update cluster with autoTags, input tags found", function(done){
-      var context = {
-        done: done()
-      };
-
-      let tempConfig = config
-
-      tempConfig.ocean.compute.launchSpecification.tags = [{tagKey:"test", tagValue:"test"}] 
-
-      update.handler(
-        _.merge({
-          accessToken: ACCESSTOKEN, 
-          autoTag:true,
-          LogicalResourceId:"ocean",
-          StackId:"arn::12345/test/67890"
-        }, tempConfig),
-        context
-      );
-    })
-
-  })
-
-  describe("fail to update cluster", function(){
-
     it("update handler should throw error", function(done) {
-      var context = {
-        done: done
-      };
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": config.ocean})
+        .reply(400, {});
 
-      sinon.stub(util, "done").returns(done())
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err, null)
+        done()
+      })
 
       update.handler(
         _.merge({
@@ -267,28 +340,6 @@ describe("ocean", function() {
         }, config),
         context
         );
-
-      util.done.restore()
-
-    });
-
-    it("ocean update handler should throw error", function(done) {
-      var context = {
-        done: done
-      };
-
-      sinon.stub(util, "done").returns(done())
-
-      ocean.handler(
-        _.merge({
-          requestType: 'update',
-          accessToken: ACCESSTOKEN,
-          id:          "o-7c1c9a42",
-        }, config)
-      );
-
-      util.done.restore()
-
     });
   })
 });

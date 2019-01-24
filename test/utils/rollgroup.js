@@ -1,7 +1,10 @@
 var _ = require('lodash'),
   assert = require('assert'),
   nock = require('nock');
-  util = require('../../lib/util');
+  util = require('../../lib/util'),
+  sinon        = require('sinon'),
+  utilSpy      = require('lambda-formation').util;
+
 
 var rollConfig = {
   batchSize: 50,
@@ -22,6 +25,14 @@ var groupConfig = {
 
 
 describe("util rollGroup", function() {
+  beforeEach(()=>{
+      nock.cleanAll();
+      sandbox = sinon.createSandbox();
+  })
+
+  afterEach(()=>{
+      sandbox.restore()
+  });
 
   it("should roll group without error", function(done) {
     nock('https://api.spotinst.io', {reqheaders: {'Authorization': `Bearer ${token}`}})
@@ -32,8 +43,7 @@ describe("util rollGroup", function() {
         return(200, {test:true})
       });
 
-    groupConfig.context = {done:done}
-      
+    utilSpy.done = sandbox.stub().returns(done())
 
     util.rollGroup(groupConfig);
   });
