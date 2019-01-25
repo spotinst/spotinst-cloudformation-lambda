@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.31] - 2019-12-16
+## [0.4.33] - UNRELEASED
+
+## [0.4.32] - 2019-01-25
+### Added
+ - Support for Ocean
+ - New Emr Strategy support
+ - retries for ocean, mrScaler, and EG create and delete
+
+### Fixed
+ - All tests to use Stubs
+
+## [0.4.31] - 2018-12-16
 ### Fix
  - Rollback for creation failed by fixing spotUtils.validateResponse()
 
