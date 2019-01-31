@@ -1,5 +1,7 @@
-var assert = require('assert');
-var util   = require('../../lib/resources/mrScaler/util');
+var assert       = require('assert'),
+    mrScalerUtil = require('../../lib/resources/mrScaler/util'),
+    nock         = require('nock'),
+    sinon        = require('sinon')
 
 const fullResult = {
   "name":        "daniel_emr_clone_manual",
@@ -117,9 +119,9 @@ const fullResult = {
   }
 };
 
-describe("util castNumericStringToNumber", function() {
+describe("mrScalerUtil castNumericStringToNumber", function() {
   
-  var skeleton = util.skeleton;
+  var skeleton = mrScalerUtil.skeleton;
   
   var config = {
     "name":        "daniel_emr_clone_manual",
@@ -238,31 +240,31 @@ describe("util castNumericStringToNumber", function() {
   };
   
   it("cast full config", function() {
-    util.castNumericStringToNumber(skeleton, config);
+    mrScalerUtil.castNumericStringToNumber(skeleton, config);
     assert.deepStrictEqual(config, fullResult);
   });
   
   it("cast number to number", function() {
     var config = {a: 1};
-    util.castNumericStringToNumber({a: null}, config);
+    mrScalerUtil.castNumericStringToNumber({a: null}, config);
     assert.deepStrictEqual(config, {a: 1});
   });
   
   it("cast string to number", function() {
     var config = {a: "1"};
-    util.castNumericStringToNumber({a: null}, config);
+    mrScalerUtil.castNumericStringToNumber({a: null}, config);
     assert.deepStrictEqual(config, {a: 1});
   });
   
   it("cast null to 0", function() {
     var config = {a: null};
-    util.castNumericStringToNumber({a: null}, config);
+    mrScalerUtil.castNumericStringToNumber({a: null}, config);
     assert.deepStrictEqual(config, {a: 0});
   });
   
   it("don't cast not found", function() {
     var config = {b: "1"};
-    util.castNumericStringToNumber({a: null}, config);
+    mrScalerUtil.castNumericStringToNumber({a: null}, config);
     assert.deepStrictEqual(config, {b: "1"});
   });
 });

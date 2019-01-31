@@ -117,6 +117,26 @@ describe("ocean", function() {
       }, context);      
     })   
 
+    it("should fail delete but cluster succeed because cluster doesnt exist", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .delete('/ocean/aws/k8s/cluster/o-7c1c9a42')
+        .reply(400, {});
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/ocean/aws/k8s/cluster/o-7c1c9a42')
+        .reply(400, {});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
+
+      deleteOcean.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'o-7c1c9a42'
+      }, context);      
+    })   
+
   });
 
   describe("delete ocean resource fail", function() {
@@ -143,6 +163,26 @@ describe("ocean", function() {
         autoTag:false,
         LogicalResourceId:"ocean",
         StackId:"arn::12345/test/67890"
+      }, context);      
+    })   
+
+    it("should fail delete then fail because cluster does exist", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .delete('/ocean/aws/k8s/cluster/o-7c1c9a42')
+        .reply(400, {});
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/ocean/aws/k8s/cluster/o-7c1c9a42')
+        .reply(200, {});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.notEqual(err, null)
+        done()
+      })
+
+      deleteOcean.handler({
+        accessToken: ACCESSTOKEN,
+        id:          'o-7c1c9a42'
       }, context);      
     })   
   });
