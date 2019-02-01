@@ -53,7 +53,9 @@ var groupConfig = {
       "product": "Linux/UNIX"
     },
     "scheduling": {},
-    "thirdPartiesIntegration": {}
+    "thirdPartiesIntegration": {
+      "beanstalk":{}
+    }
   }
 }
 
@@ -104,5 +106,71 @@ describe("beanstalkElastigroup", function() {
       );
     })
 
+    it("should import beanstalk with managedActions", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+      .post('/aws/ec2/group')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(200, {});
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+      .get('/aws/ec2/group/beanstalk/import')
+      .query({ accountId: 'act-123456',region: 'us-east-1a',environmentName: 'test',environmentId: 'env-12345' })
+      .reply(200, {response:{items:[groupConfig]}});  
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+      })
+
+      let tempGroup = groupConfig
+
+      tempGroup.beanstalkElastigroup.beanstalk.managedActions = {
+        "platformUpdate": {
+          "performAt"   : "timeWindow",
+          "timeWindow"  : "Sun:01:00-Sun:02:00",
+          "updateLevel" : "minorAndPatch"
+        }
+      }
+
+      create.handler(
+        _.merge({accessToken: ACCESSTOKEN}, tempGroup),
+        null
+      );
+    })
+
+    it("should import beanstalk with deploymentPreferences", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+      .post('/aws/ec2/group')
+      .query({ accountId: 'act-123456', ignoreInitHealthChecks: true })
+      .reply(200, {});
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+      .get('/aws/ec2/group/beanstalk/import')
+      .query({ accountId: 'act-123456',region: 'us-east-1a',environmentName: 'test',environmentId: 'env-12345' })
+      .reply(200, {response:{items:[groupConfig]}});  
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+      })
+
+      let tempGroup = groupConfig
+
+      tempGroup.beanstalkElastigroup.beanstalk.deploymentPreferences = {
+        automaticRoll: true,
+        batchSizePercentage:100,
+        gracePeriod:0,
+        strategy:{
+          action:"ROLL",
+          shouldDrainInstances:false
+        }
+      }
+      
+
+      create.handler(
+        _.merge({accessToken: ACCESSTOKEN}, tempGroup),
+        null
+      );
+    })
   });
 });
