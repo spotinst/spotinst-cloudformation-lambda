@@ -306,6 +306,30 @@ describe("update ocean", function() {
       );
     })
 
+
+    it("update cluster with shouldUpdateTargetCapacity set to false", function(done){
+      let tempConfig = config
+      delete tempConfig.ocean.capacity.target
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/ocean/aws/k8s/cluster/o-7c1c9a42', {"cluster": tempConfig.ocean})
+        .reply(200, response);
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
+
+      update.handler(
+        _.merge({
+          accessToken: ACCESSTOKEN, 
+          updatePolicy:{shouldUpdateTargetCapacity:false},
+          id: "o-7c1c9a42",
+        }, config),
+        context
+      );
+    })
+
+
   })
 
   describe("update ocean cluster fails", function(){

@@ -2,7 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.33] - UNRELEASED
+## [0.4.35] - UNRELEASED
+
+## [0.4.34] - 2019-02-21
+### Added
+  - shouldUpdateTargetCapacity to Ocean update
+
+## [0.4.33] - 2019-01-31
+### Added
+ - deploymentPreferences and managedActions to Beanstalk
 
 ## [0.4.32] - 2019-01-25
 ### Added
