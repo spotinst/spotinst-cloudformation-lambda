@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.35] - UNRELEASED
+## [0.4.36] - UNRELEEASED
+
+## [0.4.35] - 2019-03-19
+### Fixed
+ - beanstalk update supports changes to managedActions and deploymentPreferences
 
 ## [0.4.34] - 2019-02-21
 ### Added

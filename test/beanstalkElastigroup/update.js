@@ -191,6 +191,76 @@ describe("beanstalkElastigroup", function() {
       );
     });
 
+    it("update group with new beanstalk config", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+      })
+
+      var tempGroup = groupConfig
+
+      var beanstalkConfig = {
+        "environmentId": "e-hmbfgpqj6k",
+        "managedActions": {
+          "platformUpdate": {
+            "performAt"   : "timeWindow",
+            "timeWindow"  : "Mon:12:15-Mon:14:15",
+            "updateLevel" : "minorAndPatch",
+            "instanceRefreshEnabled": true
+          }
+        },
+        "deploymentPreferences":{
+          "automaticRoll": true,
+          "batchSizePercentage": 100,
+          "gracePeriod":0,
+          "strategy":{
+            "action": "REPLACE_SERVER",
+            "shouldDrainInstances": false
+          }
+        }
+      };
+
+      tempGroup.group.beanstalk = beanstalkConfig
+
+      update.handler(
+        _.merge({
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111',
+        }, tempGroup),
+        context
+      );
+    })
+
+    it("update group with healthCheckType and healthCheckGracePeriod", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
+      util.done = sandbox.spy((err, event, context, body)=>{
+          assert.equal(err, null)
+          done()
+      })
+
+      var tempGroup = groupConfig
+
+      tempGroup.group.healthCheckType = "test-type"
+      tempGroup.group.healthCheckGracePeriod = 60
+
+      update.handler(
+        _.merge({
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111',
+        }, tempGroup),
+        context
+      );
+    })
+
     it("return error from spotUtil.getTokenAndConfig", function(done){
       util.done = sandbox.spy((err, event, context, body)=>{
           assert.notEqual(err, null)
