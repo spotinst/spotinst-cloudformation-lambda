@@ -65,6 +65,12 @@ describe("beanstalkElastigroup", function() {
 
   describe("update resource", function() {
     it("update handler should update an existing group", function(done) {
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
@@ -85,6 +91,12 @@ describe("beanstalkElastigroup", function() {
     });
 
     it("elasticgroup handler should update an existing group", function(done) {
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
@@ -106,6 +118,11 @@ describe("beanstalkElastigroup", function() {
     });
 
     it("lambda handler should update an existing group", function(done) {
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
@@ -129,6 +146,11 @@ describe("beanstalkElastigroup", function() {
     });
 
     it("update handler should update an existing group and roll", function(done) {
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
@@ -164,6 +186,11 @@ describe("beanstalkElastigroup", function() {
 
     it("update handler should update an existing group and not perform roll", function(done) {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
         .reply(200, {});
@@ -192,6 +219,11 @@ describe("beanstalkElastigroup", function() {
     });
 
     it("update group with new beanstalk config", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
@@ -237,6 +269,11 @@ describe("beanstalkElastigroup", function() {
     })
 
     it("update group with healthCheckType and healthCheckGracePeriod", function(done){
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .get('/aws/ec2/group/sig-11111111')
+        .query({ accountId: 'act-123456' })
+        .reply(200, {});
+        
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
         .put('/aws/ec2/group/sig-11111111')
         .query({ accountId: 'act-123456' })
