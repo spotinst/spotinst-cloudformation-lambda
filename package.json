@@ -1,6 +1,6 @@
 {
   "name": "spotinst-lambda",
-  "version": "0.4.36",
+  "version": "0.4.38",
   "publishConfig": {
     "tag": "latest"
   },
