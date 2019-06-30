@@ -50,7 +50,66 @@ var groupConfig = {
   }
 };
 
+let groupConfigEcsIntegration = {
+  "group": {
+    "name":                    "test",
+    "description":             "asdf",
+    "strategy":                {
+      "risk":               100,
+      "onDemandCount":      null,
+      "availabilityVsCost": "balanced"
+    },
+    "capacity":                {
+      "target":  1,
+      "minimum": 1,
+      "maximum": 1
+    },
+    "scaling":                 {},
+    "compute":                 {
+      "instanceTypes":       {
+        "ondemand": "m3.medium",
+        "spot":     [
+          "m3.medium"
+        ]
+      },
+      "availabilityZones":   [
+        {
+          "name":     "us-east-1a",
+          "subnetId": "subnet-11111111"
+        }
+      ],
+      "product":             "Linux/UNIX",
+      "launchSpecification": {
+        "securityGroupIds": [
+          "sg-11111111"
+        ],
+        "monitoring":       false,
+        "imageId":          "ami-60b6c60a",
+        "keyPair":          "testkey"
+      }
+    },
+    "scheduling":              {},
+    "thirdPartiesIntegration": {
+      "ecs": {
+        "clusterName": "test-cluster",
+        "autoScale": {
+          "isEnabled": true,
+          "cooldown": 300,
+          "isAutoConfig": true,
+          "shouldScaleDownNonServiceTasks": false
+        },
+        "batch": {
+          "jobQueueNames": [
+            "fromorQueue"
+          ]
+        }
+      }
+    }
+  }
+};
+
 groupConfig.group.description = Date.now() / 1000 + "";
+groupConfigEcsIntegration.group.description = Date.now() / 1000 + "";
 
 describe("elasticgroup", function() {
   beforeEach(()=>{
@@ -130,6 +189,55 @@ describe("elasticgroup", function() {
           id:           'sig-11111111',
           updatePolicy: updatePolicyConfig
         }, groupConfig),
+        context
+      );
+    });
+  
+    it("update handler should update an existing group with ecs integration and preform cluster roll", function(done) {
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .put('/aws/ec2/group/sig-11111111', { "group": { "name": "test", "description": /.+/, "strategy": { "risk": 100, "onDemandCount": null, "availabilityVsCost": "balanced" }, "capacity": { "target":  1,  "minimum": 1, "maximum": 1 }, "scaling": {}, "compute": { "instanceTypes": { "ondemand": "m3.medium", "spot": ["m3.medium"] }, "availabilityZones": [{ "name": "us-east-1a", "subnetId": "subnet-11111111" }], "launchSpecification": { "securityGroupIds": ["sg-11111111"], "monitoring": false, "imageId": "ami-60b6c60a", "keyPair":"testkey"}},"scheduling": {},"thirdPartiesIntegration": {
+              "ecs": {
+                "clusterName": "test-cluster",
+                "autoScale": {
+                  "isEnabled": true,
+                  "cooldown": 300,
+                  "isAutoConfig": true,
+                  "shouldScaleDownNonServiceTasks": false
+                },
+                "batch": {
+                  "jobQueueNames": [
+                    "fromorQueue"
+                  ]
+                }
+              }
+            }}})
+        .reply(200, {});
+    
+      nock('https://api.spotinst.io', {"encodedQueryParams": true})
+        .post('/aws/ec2/group/sig-11111111/clusterRoll')
+        .reply(200, {});
+    
+    
+      util.done = sandbox.spy((err, event, context, body)=>{
+        assert.equal(err, null)
+        done()
+      })
+    
+      let updatePolicyConfig = {
+        shouldRoll: true,
+        rollConfig: {
+          roll: {
+            batchSizePercentage: 50
+          }
+        }
+      };
+    
+      update.handler(
+        _.merge({
+          accessToken:  ACCESSTOKEN,
+          id:           'sig-11111111',
+          updatePolicy: updatePolicyConfig
+        }, groupConfigEcsIntegration),
         context
       );
     });
