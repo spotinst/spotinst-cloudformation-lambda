@@ -52,7 +52,7 @@ var groupConfig = {
 
 let groupConfigEcsIntegration = {
   "group": {
-    "name":                    "test",
+    "name":                    "test-ecs",
     "description":             "asdf",
     "strategy":                {
       "risk":               100,
@@ -195,7 +195,7 @@ describe("elasticgroup", function() {
   
     it("update handler should update an existing group with ecs integration and preform cluster roll", function(done) {
       nock('https://api.spotinst.io', {"encodedQueryParams": true})
-        .put('/aws/ec2/group/sig-11111111', { "group": { "name": "test", "description": /.+/, "strategy": { "risk": 100, "onDemandCount": null, "availabilityVsCost": "balanced" }, "capacity": { "target":  1,  "minimum": 1, "maximum": 1 }, "scaling": {}, "compute": { "instanceTypes": { "ondemand": "m3.medium", "spot": ["m3.medium"] }, "availabilityZones": [{ "name": "us-east-1a", "subnetId": "subnet-11111111" }], "launchSpecification": { "securityGroupIds": ["sg-11111111"], "monitoring": false, "imageId": "ami-60b6c60a", "keyPair":"testkey"}},"scheduling": {},"thirdPartiesIntegration": {
+        .put('/aws/ec2/group/sig-11111111', { "group": { "name": "test-ecs", "description": /.+/, "strategy": { "risk": 100, "onDemandCount": null, "availabilityVsCost": "balanced" }, "capacity": { "target":  1,  "minimum": 1, "maximum": 1 }, "scaling": {}, "compute": { "instanceTypes": { "ondemand": "m3.medium", "spot": ["m3.medium"] }, "availabilityZones": [{ "name": "us-east-1a", "subnetId": "subnet-11111111" }], "launchSpecification": { "securityGroupIds": ["sg-11111111"], "monitoring": false, "imageId": "ami-60b6c60a", "keyPair":"testkey"}},"scheduling": {},"thirdPartiesIntegration": {
               "ecs": {
                 "clusterName": "test-cluster",
                 "autoScale": {
