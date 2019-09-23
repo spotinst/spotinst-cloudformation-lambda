@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.40] - 2019-09-22
+### Added 
+ - Support oceanEcs clusterRoll 
+ - Support oceanK8s clusterRoll  
+
 ## [0.4.39] - 2019-08-04
 ### Added 
  - Support oceanEcs 
