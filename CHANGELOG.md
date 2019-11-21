@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.41] - 2019-11-21
+### Added
+ - Support delete amiBackup images on group delete
+ - deletePolicy CFN template model updated to be same as API
+
+## [0.4.40] - 2019-09-22
+### Added
+ - Support oceanEcs clusterRoll
+ - Support oceanK8s clusterRoll
+
 ## [0.4.39] - 2019-08-04
 ### Added 
  - Support oceanEcs 
