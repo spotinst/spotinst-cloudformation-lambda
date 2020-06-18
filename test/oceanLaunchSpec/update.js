@@ -122,7 +122,7 @@ describe("update ocean", function() {
   describe("update ocean launch spec fails", function(){
     it("return error from spotUtil.getTokenAndConfig", function(done){
       util.done = sandbox.spy((err, event, context, body)=>{
-        assert.notEqual(err)
+        assert.notEqual(err, null)
         done()
       })
 

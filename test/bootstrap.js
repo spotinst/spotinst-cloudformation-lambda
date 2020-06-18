@@ -5,7 +5,7 @@ PASSWORD = process.env.SPOTINST_PASSWORD || 'mock.password';
 CLIENTID = process.env.SPOTINST_CLIENTID || 'mock.clientId';
 CLIENTSECRET = process.env.SPOTINST_CLIENTSECRET || 'mock.clientSecret';
 ACCESSTOKEN = process.env.SPOTINST_ACCESSTOKEN || 'mock.accessToken';
-
+ACCESSTOKENURL = process.env.SPOTINST_ACCESSTOKENURL || 'https://mock.accessTokenUrl/';
 
 before(function() {
 /*

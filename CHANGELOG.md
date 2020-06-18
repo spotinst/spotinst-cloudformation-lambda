@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.42] - 2020-06-18
+### Added
+ - Support OAuth 2.0 client credentials grant type
+
 ## [0.4.41] - 2019-11-21
 ### Added
  - Support delete amiBackup images on group delete
