@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.43] - 2020-07-05
+### Added
+ - Ignore events that contain only a credentials change (feature gated with a flag: `IgnoreCredentialsChanges`)
+
 ## [0.4.42] - 2020-06-18
 ### Added
  - Support OAuth 2.0 client credentials grant type
