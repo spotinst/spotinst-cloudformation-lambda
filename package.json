@@ -4,11 +4,11 @@
   "publishConfig": {
     "tag": "latest"
   },
-  "description": "AWS Lambda scripts to interface with Spotinst",
+  "description": "AWS Lambda scripts to interface with Spot by NetApp",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive --timeout 7000",
-    "dist": "zip -FSr dist/spotinst-lambda.zip * -x \"*.git*\" \"dist/*\""
+    "dist": "rm -rf dist/ && mkdir dist/ &&  zip -r dist/spotinst-lambda.zip lib node_modules index.js package.json LICENSE"
   },
   "author": {
     "name": "Kevin McGrath",

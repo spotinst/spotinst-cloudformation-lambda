@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # root directory of the project
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+
+# name of the Lambda function
+AWS_LAMBDA_FN_NAME="${AWS_LAMBDA_FN_NAME:-"spotinst-cloudformation"}"
+
+# identifier of the function's runtime
+AWS_LAMBDA_FN_RUNTIME="${AWS_LAMBDA_FN_RUNTIME:-"nodejs12.x"}"
+
+# environment variables that are accessible from function code during execution
+AWS_LAMBDA_FN_ENVIRONMENT="${AWS_LAMBDA_FN_ENVIRONMENT:-'{\"Variables\":{\"CFN_LOG_LEVEL\":\"debug\"}}'}"
 
 function log() {
 	echo "[$(date --rfc-3339=seconds)] $*"
@@ -36,8 +46,8 @@ function update() {
 	regions="$(describe_regions)"
 
 	for region in ${regions}; do
-		# update only us regions
-		# [[ "${region}" != us-* ]] && continue
+		# update only ap-northeast-* regions
+		[[ "${region}" != ap-northeast-* ]] && continue
 		update_region "${region}"
 	done
 }
