@@ -30,8 +30,7 @@ describe("util featureFlag", () => {
 
     assert.deepStrictEqual(actual, expected);
   });
-
-
+  
   it("should return TestAlpha=false,TestBeta=true", () => {
     featureFlag.set("TestAlpha=false,TestBeta=true");
 
