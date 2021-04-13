@@ -1,6 +1,10 @@
-# Change Log
+# Changelog
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [0.4.45] - 2021-04-13
+### Fixed
+ - Wrap roll configuration [#41](https://github.com/spotinst/spotinst-lambda/pull/41)
 
 ## [0.4.44] - 2020-12-11
 ### Added
