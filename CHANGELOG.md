@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.46] - 2021-05-09
+### Fixed
+ - Handle failed deletions of Ocean Launch Specs [#42](https://github.com/spotinst/spotinst-lambda/pull/42)
+
 ## [0.4.45] - 2021-04-13
 ### Fixed
  - Wrap roll configuration [#41](https://github.com/spotinst/spotinst-lambda/pull/41)
