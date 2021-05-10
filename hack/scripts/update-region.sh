@@ -27,6 +27,7 @@ function update_function_config() {
 	log "updating function configuration"
 
 	args=()
+	args+=("--no-cli-pager")
 	args+=("--profile=${AWS_PROFILE}")
 	args+=("--region=${AWS_REGION}")
 	args+=("--function-name=${AWS_LAMBDA_FN_NAME}")
@@ -44,6 +45,7 @@ function update_function_code() {
 	log "updating function code"
 
 	args=()
+	args+=("--no-cli-pager")
 	args+=("--profile=${AWS_PROFILE}")
 	args+=("--region=${AWS_REGION}")
 	args+=("--function-name=${AWS_LAMBDA_FN_NAME}")
@@ -58,6 +60,7 @@ function update_version() {
 	log "updating version"
 
 	args=()
+	args+=("--no-cli-pager")
 	args+=("--profile=${AWS_PROFILE}")
 	args+=("--region=${AWS_REGION}")
 	args+=("--function-name=${AWS_LAMBDA_FN_NAME}")

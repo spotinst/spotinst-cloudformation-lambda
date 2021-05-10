@@ -19,9 +19,20 @@ function log() {
 
 function describe_regions() {
 	aws ec2 describe-regions \
+		--no-cli-pager \
 		--profile "${AWS_PROFILE}" \
 		--region "us-east-1" |
 		jq -r .Regions[].RegionName
+}
+
+function lambda_exists() {
+	aws lambda get-function \
+		--no-cli-pager \
+		--profile "${AWS_PROFILE}" \
+		--function-name "${AWS_LAMBDA_FN_NAME}" \
+		--region "${1}" \
+		>/dev/null 2>&1
+	 echo $?
 }
 
 function update_region() {
@@ -47,8 +58,14 @@ function update() {
 
 	for region in ${regions}; do
 		# update only ap-northeast-* regions
-		[[ "${region}" != ap-northeast-* ]] && continue
-		update_region "${region}"
+		# [[ "${region}" != ap-northeast-* ]] && continue
+		log "handling region: ${region}"
+		exists="$(lambda_exists "${region}")"
+		if [[ 0 -eq "${exists}" ]]; then
+			update_region "${region}"
+		else
+			log "skipping region: ${region} (reason: lambda does not exist)"
+		fi
 	done
 }
 
