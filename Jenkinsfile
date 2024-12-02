@@ -14,6 +14,13 @@ def pod = renderPod(
 def svcName       = 'spotinst-cloudformation-gidi'
 def defaultBranch = 'master'
 def roleName      = 'Spotinst-Lambda-Execution-Role'
+
+// these will be concatenated as flags to the aws lambda create-function command
+def lambdaConfig  = [
+    "timeout": "900",
+    "concurrency": "1000"
+]
+
 def regions = [
     'af-south-1',
     'ap-east-1',
@@ -52,4 +59,5 @@ nodejsLambdaPipeline(
     nodeVersion:   nodeVersion,
     regions:       regions,
     roleName:      roleName,
+    lambdaConfig:  lambdaConfig
 )
