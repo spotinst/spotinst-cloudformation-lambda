@@ -45,7 +45,7 @@ def regions = [
     'us-west-2'
 ]
 
-setCredentialsLambdaPipeline(
+nodejsLambdaPipeline(
     svcName:       svcName,
     podDefinition: pod,
     defaultBranch: defaultBranch,
