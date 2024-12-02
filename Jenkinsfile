@@ -17,8 +17,7 @@ def roleName      = 'Spotinst-Lambda-Execution-Role'
 
 // these will be concatenated as flags to the aws lambda create-function command
 def lambdaConfig  = [
-    "timeout": "900",
-    "concurrency": "1000"
+    "timeout": "900"
 ]
 
 def regions = [
