@@ -1,4 +1,4 @@
-@Library('utils@SPOTDS-7311-nojs-lambda') _
+@Library('utils') _
 import com.spotinst.GlobalVars
 
 def nodeVersion   = '22'
