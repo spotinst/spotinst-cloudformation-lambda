@@ -11,7 +11,7 @@ def pod = renderPod(
     nodejsVersion:  nodeVersion
 )
 
-def svcName       = 'spotinst-cloudformation-gidi'
+def svcName       = 'spotinst-cloudformation'
 def defaultBranch = 'master'
 def roleName      = 'Spotinst-Lambda-Execution-Role'
 
