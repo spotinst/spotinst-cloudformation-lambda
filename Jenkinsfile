@@ -1,4 +1,4 @@
-@Library('utils') _
+@Library('utils@SPOTDS-1-nodejs-lambda-runtime-upgrade-param') _
 import com.spotinst.GlobalVars
 
 def nodeVersion   = '22'
